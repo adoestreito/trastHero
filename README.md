@@ -48,14 +48,45 @@ Open [http://localhost:3000](http://localhost:3000). Create an account (or sign 
 - **Email confirmation:** If enabled under **Authentication → Providers → Email**, new users must confirm their email before signing in. For a small family app you can turn confirmation off to keep signup simple.
 - **Limit who can register:** In **Authentication → Providers → Email**, disable “Allow new users to sign up” after everyone has accounts. You can still add members manually from the dashboard.
 
-## Deploy
+## Deploy on Vercel
 
-### Vercel
+Code is on [GitHub](https://github.com/adoestreito/trastHero). Deploy from the dashboard (recommended):
 
-1. Push this repo to GitHub.
-2. Import the repo in [Vercel](https://vercel.com/new).
-3. Add the same `NEXT_PUBLIC_SUPABASE_*` variables in **Project Settings → Environment Variables**.
-4. Deploy.
+### 1. Import project
+
+1. Go to [vercel.com/new](https://vercel.com/new) and sign in with GitHub.
+2. Import **adoestreito/trastHero**.
+3. Framework preset should be **Next.js** (auto-detected). Leave build settings as default.
+
+### 2. Environment variables
+
+Before deploying, add **Environment Variables** (same values as in your local `.env.local`):
+
+| Name | Environments |
+|------|----------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Production, Preview, Development |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Production, Preview, Development |
+
+### 3. Deploy
+
+Click **Deploy**. Vercel will build and give you a URL like `https://trast-hero.vercel.app`.
+
+### 4. Supabase auth (required for login on production)
+
+In Supabase → **Authentication** → **URL Configuration**:
+
+- **Site URL:** your Vercel production URL (e.g. `https://trast-hero.vercel.app`)
+- **Redirect URLs:** add `https://trast-hero.vercel.app/**` (and preview URLs if you use them)
+
+### CLI (optional)
+
+```bash
+npx vercel login
+npx vercel link
+npx vercel env add NEXT_PUBLIC_SUPABASE_URL
+npx vercel env add NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+npx vercel --prod
+```
 
 ### Git remote
 
