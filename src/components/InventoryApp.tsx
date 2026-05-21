@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ItemCard } from "@/components/ItemCard";
 import { ItemForm } from "@/components/ItemForm";
+import { LocationAccordion } from "@/components/LocationAccordion";
 import {
   createItem,
   deleteItem,
@@ -199,20 +199,15 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
             : "No items match your search."}
         </p>
       ) : (
-        <ul className="flex flex-col gap-4">
-          {filtered.map((item) => (
-            <li key={item.id}>
-              <ItemCard
-                item={item}
-                locations={locations}
-                onLocationCreated={handleLocationCreated}
-                onSave={handleSave}
-                onDelete={handleDelete}
-                disabled={busy}
-              />
-            </li>
-          ))}
-        </ul>
+        <LocationAccordion
+          items={filtered}
+          locations={locations}
+          searchQuery={search}
+          onLocationCreated={handleLocationCreated}
+          onSave={handleSave}
+          onDelete={handleDelete}
+          disabled={busy}
+        />
       )}
 
       {!loading && items.length > 0 && (

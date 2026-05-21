@@ -13,6 +13,7 @@ type ItemCardProps = {
   onSave: (id: string, draft: StorageItemDraft) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   disabled?: boolean;
+  hideLocation?: boolean;
 };
 
 function itemToDraft(item: StorageItem): StorageItemDraft {
@@ -47,6 +48,7 @@ export function ItemCard({
   onSave,
   onDelete,
   disabled,
+  hideLocation,
 }: ItemCardProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<StorageItemDraft>(() => itemToDraft(item));
@@ -133,7 +135,7 @@ export function ItemCard({
           </div>
 
           <dl className="mt-2 grid gap-1 text-sm text-muted sm:grid-cols-2">
-            {item.location?.name && (
+            {!hideLocation && item.location?.name && (
               <div>
                 <dt className="inline font-medium text-foreground/70">Location: </dt>
                 <dd className="inline">{item.location.name}</dd>

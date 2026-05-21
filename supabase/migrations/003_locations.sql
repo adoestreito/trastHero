@@ -9,10 +9,9 @@ create table if not exists public.locations (
 );
 
 insert into public.locations (name, sort_order) values
-  ('armario derecha', 1),
-  ('armario izquierda', 2),
-  ('armario ezquina derecha', 3),
-  ('congelador', 4)
+  ('armario izquierda', 1),
+  ('armario ezquina derecha', 2),
+  ('congelador', 3)
 on conflict (name) do nothing;
 
 -- Migrate existing free-text locations into the lookup table
