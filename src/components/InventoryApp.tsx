@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { ItemForm } from "@/components/ItemForm";
 import { LocationAccordion } from "@/components/LocationAccordion";
+import { TagFilter } from "@/components/TagFilter";
 import {
   createItem,
   deleteItem,
@@ -37,6 +38,7 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
   const [newItem, setNewItem] = useState<StorageItemDraft>(emptyDraft);
   const [adding, setAdding] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -114,8 +116,13 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
   };
 
   const filtered = items.filter((item) => {
+    if (selectedTagId && !item.tags.some((t) => t.id === selectedTagId)) {
+      return false;
+    }
+
     const q = search.trim().toLowerCase();
     if (!q) return true;
+
     return (
       item.name.toLowerCase().includes(q) ||
       (item.location?.name.toLowerCase().includes(q) ?? false) ||
@@ -123,6 +130,9 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
       item.tags.some((t) => t.name.toLowerCase().includes(q))
     );
   });
+
+  const hasActiveFilters =
+    search.trim().length > 0 || selectedTagId !== null;
 
   const busy = loading || adding;
 
@@ -184,6 +194,15 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
         </button>
       </div>
 
+      {!loading && (
+        <TagFilter
+          tags={tags}
+          items={items}
+          selectedTagId={selectedTagId}
+          onChange={setSelectedTagId}
+        />
+      )}
+
       {showAddForm && (
         <section className="mb-8 rounded-xl border border-border bg-card p-5 shadow-sm">
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
@@ -215,14 +234,16 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
         <p className="rounded-xl border border-dashed border-border py-16 text-center text-muted">
           {items.length === 0
             ? "No items yet. Add your first one above."
-            : "No items match your search."}
+            : hasActiveFilters
+              ? "No items match your filters."
+              : "No items match your search."}
         </p>
       ) : (
         <LocationAccordion
           items={filtered}
           locations={locations}
           tags={tags}
-          searchQuery={search}
+          expandAllSections={hasActiveFilters}
           onLocationCreated={handleLocationCreated}
           onTagCreated={handleTagCreated}
           onSave={handleSave}

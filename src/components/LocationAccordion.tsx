@@ -11,7 +11,7 @@ type LocationAccordionProps = {
   items: StorageItem[];
   locations: StorageLocation[];
   tags: StorageTag[];
-  searchQuery: string;
+  expandAllSections?: boolean;
   onLocationCreated: (location: StorageLocation) => void;
   onTagCreated: (tag: StorageTag) => void;
   onSave: (id: string, draft: StorageItemDraft) => Promise<void>;
@@ -23,7 +23,7 @@ export function LocationAccordion({
   items,
   locations,
   tags,
-  searchQuery,
+  expandAllSections = false,
   onLocationCreated,
   onTagCreated,
   onSave,
@@ -35,7 +35,6 @@ export function LocationAccordion({
     [items, locations]
   );
 
-  const isSearching = searchQuery.trim().length > 0;
   const groupKeys = groups.map((g) => g.key).join(",");
 
   const [openKeys, setOpenKeys] = useState<Set<string>>(() => new Set());
@@ -45,12 +44,12 @@ export function LocationAccordion({
       setOpenKeys(new Set());
       return;
     }
-    if (isSearching) {
+    if (expandAllSections) {
       setOpenKeys(new Set(groups.map((g) => g.key)));
       return;
     }
     setOpenKeys(new Set([groups[0].key]));
-  }, [groupKeys, isSearching, groups]);
+  }, [groupKeys, expandAllSections, groups]);
 
   const toggle = (key: string) => {
     setOpenKeys((prev) => {
