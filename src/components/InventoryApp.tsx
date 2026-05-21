@@ -9,14 +9,16 @@ import {
   fetchItems,
   updateItem,
 } from "@/lib/items";
+import { fetchLocations } from "@/lib/locations";
 import type { StorageItem, StorageItemDraft } from "@/types/item";
+import type { StorageLocation } from "@/types/location";
 
 const emptyDraft = (): StorageItemDraft => ({
   name: "",
   quantity: 1,
   description: null,
   expiration_date: null,
-  location: null,
+  location_id: null,
 });
 
 type InventoryAppProps = {
@@ -27,6 +29,7 @@ type InventoryAppProps = {
 export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
   const [signingOut, setSigningOut] = useState(false);
   const [items, setItems] = useState<StorageItem[]>([]);
+  const [locations, setLocations] = useState<StorageLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -37,8 +40,9 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
   const load = useCallback(async () => {
     setError(null);
     try {
-      const data = await fetchItems();
+      const [data, locs] = await Promise.all([fetchItems(), fetchLocations()]);
       setItems(data);
+      setLocations(locs);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load items");
     } finally {
@@ -78,6 +82,15 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
     );
   };
 
+  const handleLocationCreated = (location: StorageLocation) => {
+    setLocations((prev) => {
+      if (prev.some((l) => l.id === location.id)) return prev;
+      return [...prev, location].sort(
+        (a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name)
+      );
+    });
+  };
+
   const handleDelete = async (id: string) => {
     setError(null);
     await deleteItem(id);
@@ -89,7 +102,7 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
     if (!q) return true;
     return (
       item.name.toLowerCase().includes(q) ||
-      (item.location?.toLowerCase().includes(q) ?? false) ||
+      (item.location?.name.toLowerCase().includes(q) ?? false) ||
       (item.description?.toLowerCase().includes(q) ?? false)
     );
   });
@@ -159,7 +172,13 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
             New item
           </h2>
-          <ItemForm draft={newItem} onChange={setNewItem} />
+          <ItemForm
+            draft={newItem}
+            onChange={setNewItem}
+            locations={locations}
+            onLocationCreated={handleLocationCreated}
+            disabled={busy}
+          />
           <button
             type="button"
             onClick={handleAdd}
@@ -185,6 +204,8 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
             <li key={item.id}>
               <ItemCard
                 item={item}
+                locations={locations}
+                onLocationCreated={handleLocationCreated}
                 onSave={handleSave}
                 onDelete={handleDelete}
                 disabled={busy}

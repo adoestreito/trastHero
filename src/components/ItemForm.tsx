@@ -1,17 +1,29 @@
 "use client";
 
+import { LocationSelect } from "@/components/LocationSelect";
+import type { StorageLocation } from "@/types/location";
 import type { StorageItemDraft } from "@/types/item";
 
 type ItemFormProps = {
   draft: StorageItemDraft;
   onChange: (draft: StorageItemDraft) => void;
+  locations: StorageLocation[];
+  onLocationCreated: (location: StorageLocation) => void;
   compact?: boolean;
+  disabled?: boolean;
 };
 
 const inputClass =
   "w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20";
 
-export function ItemForm({ draft, onChange, compact }: ItemFormProps) {
+export function ItemForm({
+  draft,
+  onChange,
+  locations,
+  onLocationCreated,
+  compact,
+  disabled,
+}: ItemFormProps) {
   const set = <K extends keyof StorageItemDraft>(
     key: K,
     value: StorageItemDraft[K]
@@ -35,6 +47,7 @@ export function ItemForm({ draft, onChange, compact }: ItemFormProps) {
           onChange={(e) => set("name", e.target.value)}
           placeholder="e.g. Camping tent"
           required
+          disabled={disabled}
         />
       </label>
 
@@ -51,6 +64,7 @@ export function ItemForm({ draft, onChange, compact }: ItemFormProps) {
             set("quantity", Math.max(0, parseInt(e.target.value, 10) || 0))
           }
           required
+          disabled={disabled}
         />
       </label>
 
@@ -58,11 +72,12 @@ export function ItemForm({ draft, onChange, compact }: ItemFormProps) {
         <span className="mb-1 block text-xs font-medium text-muted">
           Location
         </span>
-        <input
-          className={inputClass}
-          value={draft.location ?? ""}
-          onChange={(e) => set("location", e.target.value || null)}
-          placeholder="e.g. Shelf B, top box"
+        <LocationSelect
+          locations={locations}
+          value={draft.location_id ?? null}
+          onChange={(locationId) => set("location_id", locationId)}
+          onLocationCreated={onLocationCreated}
+          disabled={disabled}
         />
       </label>
 
@@ -75,6 +90,7 @@ export function ItemForm({ draft, onChange, compact }: ItemFormProps) {
           type="date"
           value={draft.expiration_date ?? ""}
           onChange={(e) => set("expiration_date", e.target.value || null)}
+          disabled={disabled}
         />
       </label>
 
@@ -88,6 +104,7 @@ export function ItemForm({ draft, onChange, compact }: ItemFormProps) {
           value={draft.description ?? ""}
           onChange={(e) => set("description", e.target.value || null)}
           placeholder="Notes, brand, size…"
+          disabled={disabled}
         />
       </label>
     </div>

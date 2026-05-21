@@ -3,10 +3,13 @@
 import { useState } from "react";
 import { ItemForm } from "@/components/ItemForm";
 import { formatDate, getExpirationStatus } from "@/lib/dates";
+import type { StorageLocation } from "@/types/location";
 import type { StorageItem, StorageItemDraft } from "@/types/item";
 
 type ItemCardProps = {
   item: StorageItem;
+  locations: StorageLocation[];
+  onLocationCreated: (location: StorageLocation) => void;
   onSave: (id: string, draft: StorageItemDraft) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   disabled?: boolean;
@@ -19,7 +22,7 @@ function itemToDraft(item: StorageItem): StorageItemDraft {
     quantity: item.quantity,
     description: item.description,
     expiration_date: item.expiration_date,
-    location: item.location,
+    location_id: item.location_id,
   };
 }
 
@@ -37,7 +40,14 @@ const statusClass = {
   expired: "bg-danger/15 text-danger",
 } as const;
 
-export function ItemCard({ item, onSave, onDelete, disabled }: ItemCardProps) {
+export function ItemCard({
+  item,
+  locations,
+  onLocationCreated,
+  onSave,
+  onDelete,
+  disabled,
+}: ItemCardProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<StorageItemDraft>(() => itemToDraft(item));
   const [saving, setSaving] = useState(false);
@@ -74,7 +84,14 @@ export function ItemCard({ item, onSave, onDelete, disabled }: ItemCardProps) {
   if (editing) {
     return (
       <article className="rounded-xl border border-accent/40 bg-card p-4 shadow-sm">
-        <ItemForm draft={draft} onChange={setDraft} compact />
+        <ItemForm
+          draft={draft}
+          onChange={setDraft}
+          locations={locations}
+          onLocationCreated={onLocationCreated}
+          compact
+          disabled={disabled || saving}
+        />
         <div className="mt-4 flex flex-wrap gap-2">
           <button
             type="button"
@@ -116,10 +133,10 @@ export function ItemCard({ item, onSave, onDelete, disabled }: ItemCardProps) {
           </div>
 
           <dl className="mt-2 grid gap-1 text-sm text-muted sm:grid-cols-2">
-            {item.location && (
+            {item.location?.name && (
               <div>
                 <dt className="inline font-medium text-foreground/70">Location: </dt>
-                <dd className="inline">{item.location}</dd>
+                <dd className="inline">{item.location.name}</dd>
               </div>
             )}
             {item.expiration_date && (
