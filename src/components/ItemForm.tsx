@@ -1,7 +1,9 @@
 "use client";
 
 import { LocationSelect } from "@/components/LocationSelect";
+import { TagInput } from "@/components/TagInput";
 import type { StorageLocation } from "@/types/location";
+import type { StorageTag } from "@/types/tag";
 import type { StorageItemDraft } from "@/types/item";
 
 type ItemFormProps = {
@@ -9,6 +11,8 @@ type ItemFormProps = {
   onChange: (draft: StorageItemDraft) => void;
   locations: StorageLocation[];
   onLocationCreated: (location: StorageLocation) => void;
+  tags: StorageTag[];
+  onTagCreated: (tag: StorageTag) => void;
   compact?: boolean;
   disabled?: boolean;
 };
@@ -21,6 +25,8 @@ export function ItemForm({
   onChange,
   locations,
   onLocationCreated,
+  tags,
+  onTagCreated,
   compact,
   disabled,
 }: ItemFormProps) {
@@ -90,6 +96,19 @@ export function ItemForm({
           type="date"
           value={draft.expiration_date ?? ""}
           onChange={(e) => set("expiration_date", e.target.value || null)}
+          disabled={disabled}
+        />
+      </label>
+
+      <label className={compact ? "sm:col-span-6" : "sm:col-span-2"}>
+        <span className="mb-1 block text-xs font-medium text-muted">
+          Tags
+        </span>
+        <TagInput
+          tags={tags}
+          selectedIds={draft.tag_ids ?? []}
+          onChange={(tagIds) => set("tag_ids", tagIds)}
+          onTagCreated={onTagCreated}
           disabled={disabled}
         />
       </label>

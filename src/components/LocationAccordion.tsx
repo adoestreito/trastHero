@@ -5,12 +5,15 @@ import { ItemCard } from "@/components/ItemCard";
 import { groupItemsByLocation } from "@/lib/groupByLocation";
 import type { StorageItem, StorageItemDraft } from "@/types/item";
 import type { StorageLocation } from "@/types/location";
+import type { StorageTag } from "@/types/tag";
 
 type LocationAccordionProps = {
   items: StorageItem[];
   locations: StorageLocation[];
+  tags: StorageTag[];
   searchQuery: string;
   onLocationCreated: (location: StorageLocation) => void;
+  onTagCreated: (tag: StorageTag) => void;
   onSave: (id: string, draft: StorageItemDraft) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   disabled?: boolean;
@@ -19,8 +22,10 @@ type LocationAccordionProps = {
 export function LocationAccordion({
   items,
   locations,
+  tags,
   searchQuery,
   onLocationCreated,
+  onTagCreated,
   onSave,
   onDelete,
   disabled,
@@ -97,7 +102,9 @@ export function LocationAccordion({
                     <ItemCard
                       item={item}
                       locations={locations}
+                      tags={tags}
                       onLocationCreated={onLocationCreated}
+                      onTagCreated={onTagCreated}
                       onSave={onSave}
                       onDelete={onDelete}
                       disabled={disabled}

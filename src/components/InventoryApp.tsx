@@ -10,8 +10,10 @@ import {
   updateItem,
 } from "@/lib/items";
 import { fetchLocations } from "@/lib/locations";
+import { fetchTags } from "@/lib/tags";
 import type { StorageItem, StorageItemDraft } from "@/types/item";
 import type { StorageLocation } from "@/types/location";
+import type { StorageTag } from "@/types/tag";
 
 const emptyDraft = (): StorageItemDraft => ({
   name: "",
@@ -19,6 +21,7 @@ const emptyDraft = (): StorageItemDraft => ({
   description: null,
   expiration_date: null,
   location_id: null,
+  tag_ids: [],
 });
 
 type InventoryAppProps = {
@@ -30,6 +33,7 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
   const [signingOut, setSigningOut] = useState(false);
   const [items, setItems] = useState<StorageItem[]>([]);
   const [locations, setLocations] = useState<StorageLocation[]>([]);
+  const [tags, setTags] = useState<StorageTag[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -40,9 +44,14 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
   const load = useCallback(async () => {
     setError(null);
     try {
-      const [data, locs] = await Promise.all([fetchItems(), fetchLocations()]);
+      const [data, locs, tagList] = await Promise.all([
+        fetchItems(),
+        fetchLocations(),
+        fetchTags(),
+      ]);
       setItems(data);
       setLocations(locs);
+      setTags(tagList);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load items");
     } finally {
@@ -82,6 +91,13 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
     );
   };
 
+  const handleTagCreated = (tag: StorageTag) => {
+    setTags((prev) => {
+      if (prev.some((t) => t.id === tag.id)) return prev;
+      return [...prev, tag].sort((a, b) => a.name.localeCompare(b.name));
+    });
+  };
+
   const handleLocationCreated = (location: StorageLocation) => {
     setLocations((prev) => {
       if (prev.some((l) => l.id === location.id)) return prev;
@@ -103,7 +119,8 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
     return (
       item.name.toLowerCase().includes(q) ||
       (item.location?.name.toLowerCase().includes(q) ?? false) ||
-      (item.description?.toLowerCase().includes(q) ?? false)
+      (item.description?.toLowerCase().includes(q) ?? false) ||
+      item.tags.some((t) => t.name.toLowerCase().includes(q))
     );
   });
 
@@ -150,7 +167,7 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
         <input
           type="search"
-          placeholder="Search by name, location, or notes…"
+          placeholder="Search by name, location, tags, or notes…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="flex-1 rounded-lg border border-border bg-card px-4 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
@@ -176,7 +193,9 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
             draft={newItem}
             onChange={setNewItem}
             locations={locations}
+            tags={tags}
             onLocationCreated={handleLocationCreated}
+            onTagCreated={handleTagCreated}
             disabled={busy}
           />
           <button
@@ -202,8 +221,10 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
         <LocationAccordion
           items={filtered}
           locations={locations}
+          tags={tags}
           searchQuery={search}
           onLocationCreated={handleLocationCreated}
+          onTagCreated={handleTagCreated}
           onSave={handleSave}
           onDelete={handleDelete}
           disabled={busy}

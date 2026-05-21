@@ -18,6 +18,7 @@ A family storage room inventory app. Track item name, quantity, and optional des
    - [`supabase/migrations/002_auth_rls.sql`](supabase/migrations/002_auth_rls.sql)
    - [`supabase/migrations/003_locations.sql`](supabase/migrations/003_locations.sql)
    - [`supabase/migrations/004_remove_armario_derecha_locations.sql`](supabase/migrations/004_remove_armario_derecha_locations.sql) (if you already ran 003 with old defaults)
+   - [`supabase/migrations/005_tags.sql`](supabase/migrations/005_tags.sql)
 3. Enable **Authentication → Providers → Email** (email + password).
 4. Copy your project URL and **publishable** key from **Project Settings → API** (the legacy anon key also works).
 
@@ -109,6 +110,7 @@ git push -u origin main
 | description      | no       | text    |
 | expiration_date  | no       | date    |
 | location         | no       | select from `locations` (defaults: armario izquierda, armario ezquina derecha, congelador; add more in the app) |
+| tags             | no       | many tags per item; shared tag list; searchable |
 
 Row Level Security allows only **authenticated** users to read and write items (see `002_auth_rls.sql`).
 

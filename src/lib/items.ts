@@ -1,15 +1,31 @@
 import { getSupabase } from "@/lib/supabase/client";
+import { syncItemTags } from "@/lib/tags";
 import type { StorageItem, StorageItemInput } from "@/types/item";
+import type { StorageTag } from "@/types/tag";
 
-const itemSelect = "*, location:locations(id, name)";
+const itemSelect =
+  "*, location:locations(id, name), item_tags(tag:tags(id, name))";
 
-type ItemRow = Omit<StorageItem, "location"> & {
+type ItemRow = Omit<StorageItem, "location" | "tags"> & {
   location: StorageItem["location"] | StorageItem["location"][] | null;
+  item_tags: { tag: StorageTag | StorageTag[] | null }[] | null;
 };
 
+function normalizeRelation<T extends { id: string; name: string }>(
+  value: T | T[] | null | undefined | (T | null)[]
+): T | null {
+  if (!value) return null;
+  if (Array.isArray(value)) return (value[0] ?? null) as T | null;
+  return value;
+}
+
 function normalizeItem(row: ItemRow): StorageItem {
-  const loc = row.location;
-  const location = Array.isArray(loc) ? (loc[0] ?? null) : loc;
+  const location = normalizeRelation(row.location);
+  const tags = (row.item_tags ?? [])
+    .map((link) => normalizeRelation(link.tag))
+    .filter((t) => t !== null)
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   return {
     id: row.id,
     name: row.name,
@@ -20,6 +36,7 @@ function normalizeItem(row: ItemRow): StorageItem {
     created_at: row.created_at,
     updated_at: row.updated_at,
     location,
+    tags,
   };
 }
 
@@ -53,7 +70,10 @@ export async function createItem(input: StorageItemInput): Promise<StorageItem> 
     .single();
 
   if (error) throw error;
-  return normalizeItem(data as ItemRow);
+
+  const item = normalizeItem(data as ItemRow);
+  await syncItemTags(item.id, input.tag_ids ?? []);
+  return fetchItemById(item.id);
 }
 
 export async function updateItem(
@@ -61,11 +81,23 @@ export async function updateItem(
   input: StorageItemInput
 ): Promise<StorageItem> {
   const supabase = getSupabase();
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("items")
     .update(toDbPayload(input))
-    .eq("id", id)
+    .eq("id", id);
+
+  if (error) throw error;
+
+  await syncItemTags(id, input.tag_ids ?? []);
+  return fetchItemById(id);
+}
+
+async function fetchItemById(id: string): Promise<StorageItem> {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("items")
     .select(itemSelect)
+    .eq("id", id)
     .single();
 
   if (error) throw error;

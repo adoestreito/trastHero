@@ -4,12 +4,15 @@ import { useState } from "react";
 import { ItemForm } from "@/components/ItemForm";
 import { formatDate, getExpirationStatus } from "@/lib/dates";
 import type { StorageLocation } from "@/types/location";
+import type { StorageTag } from "@/types/tag";
 import type { StorageItem, StorageItemDraft } from "@/types/item";
 
 type ItemCardProps = {
   item: StorageItem;
   locations: StorageLocation[];
+  tags: StorageTag[];
   onLocationCreated: (location: StorageLocation) => void;
+  onTagCreated: (tag: StorageTag) => void;
   onSave: (id: string, draft: StorageItemDraft) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   disabled?: boolean;
@@ -24,6 +27,7 @@ function itemToDraft(item: StorageItem): StorageItemDraft {
     description: item.description,
     expiration_date: item.expiration_date,
     location_id: item.location_id,
+    tag_ids: item.tags.map((t) => t.id),
   };
 }
 
@@ -44,7 +48,9 @@ const statusClass = {
 export function ItemCard({
   item,
   locations,
+  tags,
   onLocationCreated,
+  onTagCreated,
   onSave,
   onDelete,
   disabled,
@@ -90,7 +96,9 @@ export function ItemCard({
           draft={draft}
           onChange={setDraft}
           locations={locations}
+          tags={tags}
           onLocationCreated={onLocationCreated}
+          onTagCreated={onTagCreated}
           compact
           disabled={disabled || saving}
         />
@@ -133,6 +141,19 @@ export function ItemCard({
               </span>
             )}
           </div>
+
+          {item.tags.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {item.tags.map((tag) => (
+                <span
+                  key={tag.id}
+                  className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent"
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+          )}
 
           <dl className="mt-2 grid gap-1 text-sm text-muted sm:grid-cols-2">
             {!hideLocation && item.location?.name && (
