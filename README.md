@@ -1,6 +1,6 @@
 # TrastHero
 
-A personal storage room inventory app. Track item name, quantity, and optional description, expiration date, and location. Data lives in [Supabase](https://supabase.com); the UI is a [Next.js](https://nextjs.org) app deployable on [Vercel](https://vercel.com).
+A family storage room inventory app. Track item name, quantity, and optional description, expiration date, and location. Family members sign in with email and password; everyone shares the same inventory. Data lives in [Supabase](https://supabase.com); the UI is a [Next.js](https://nextjs.org) app deployable on [Vercel](https://vercel.com).
 
 ## Stack
 
@@ -13,8 +13,11 @@ A personal storage room inventory app. Track item name, quantity, and optional d
 ### 1. Supabase
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. Open **SQL Editor** and run the migration in [`supabase/migrations/001_create_items.sql`](supabase/migrations/001_create_items.sql).
-3. Copy your project URL and **publishable** key from **Project Settings → API** (the legacy anon key also works).
+2. Open **SQL Editor** and run, in order:
+   - [`supabase/migrations/001_create_items.sql`](supabase/migrations/001_create_items.sql)
+   - [`supabase/migrations/002_auth_rls.sql`](supabase/migrations/002_auth_rls.sql)
+3. Enable **Authentication → Providers → Email** (email + password).
+4. Copy your project URL and **publishable** key from **Project Settings → API** (the legacy anon key also works).
 
 ### 2. Environment
 
@@ -36,7 +39,14 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). Create an account (or sign in), then use the inventory.
+
+## Authentication (family)
+
+- Each family member **creates an account** with email + password, or you create users for them in **Authentication → Users** in the Supabase dashboard.
+- All signed-in users see and edit the **same shared** storage list (one household inventory).
+- **Email confirmation:** If enabled under **Authentication → Providers → Email**, new users must confirm their email before signing in. For a small family app you can turn confirmation off to keep signup simple.
+- **Limit who can register:** In **Authentication → Providers → Email**, disable “Allow new users to sign up” after everyone has accounts. You can still add members manually from the dashboard.
 
 ## Deploy
 
@@ -67,7 +77,7 @@ git push -u origin main
 | expiration_date  | no       | date    |
 | location         | no       | text    |
 
-Row Level Security is enabled with open policies for a personal single-user setup. If you add Supabase Auth later, tighten the policies in the migration file.
+Row Level Security allows only **authenticated** users to read and write items (see `002_auth_rls.sql`).
 
 ## License
 

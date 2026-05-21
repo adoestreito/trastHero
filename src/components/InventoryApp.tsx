@@ -19,7 +19,13 @@ const emptyDraft = (): StorageItemDraft => ({
   location: null,
 });
 
-export function InventoryApp() {
+type InventoryAppProps = {
+  userEmail: string;
+  onSignOut: () => Promise<void>;
+};
+
+export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
+  const [signingOut, setSigningOut] = useState(false);
   const [items, setItems] = useState<StorageItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,11 +98,31 @@ export function InventoryApp() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          TrastHero
-        </h1>
-        <p className="mt-1 text-muted">What&apos;s in my storage room</p>
+      <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            TrastHero
+          </h1>
+          <p className="mt-1 text-muted">Family storage room inventory</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-muted">{userEmail}</span>
+          <button
+            type="button"
+            disabled={signingOut}
+            onClick={async () => {
+              setSigningOut(true);
+              try {
+                await onSignOut();
+              } finally {
+                setSigningOut(false);
+              }
+            }}
+            className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium hover:bg-background disabled:opacity-50"
+          >
+            {signingOut ? "Signing out…" : "Sign out"}
+          </button>
+        </div>
       </header>
 
       {error && (

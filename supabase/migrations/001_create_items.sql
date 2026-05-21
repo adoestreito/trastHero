@@ -32,8 +32,8 @@ create trigger items_set_updated_at
 
 alter table public.items enable row level security;
 
--- Personal app: allow all operations with the anon key.
--- Tighten this if you add Supabase Auth later.
+-- Open policies for initial setup without auth.
+-- Run 002_auth_rls.sql after enabling Email auth to restrict to signed-in users.
 create policy "Allow public read on items"
   on public.items for select
   using (true);

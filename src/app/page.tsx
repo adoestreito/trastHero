@@ -1,5 +1,10 @@
-import { InventoryApp } from "@/components/InventoryApp";
+import { AppShell } from "@/components/AppShell";
+import { AuthProvider } from "@/components/AuthProvider";
 
 export default function Home() {
-  return <InventoryApp />;
+  return (
+    <AuthProvider>
+      <AppShell />
+    </AuthProvider>
+  );
 }
