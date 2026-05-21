@@ -2,32 +2,37 @@
 
 import { useMemo } from "react";
 import type { StorageItem } from "@/types/item";
-import type { StorageTag } from "@/types/tag";
 
 type TagFilterProps = {
-  tags: StorageTag[];
   items: StorageItem[];
   selectedTagId: string | null;
   onChange: (tagId: string | null) => void;
 };
 
 export function TagFilter({
-  tags,
   items,
   selectedTagId,
   onChange,
 }: TagFilterProps) {
   const tagsInUse = useMemo(() => {
-    return tags
-      .map((tag) => ({
-        ...tag,
-        count: items.filter((item) =>
-          item.tags.some((t) => t.id === tag.id)
-        ).length,
-      }))
-      .filter((t) => t.count > 0)
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [tags, items]);
+    const map = new Map<
+      string,
+      { id: string; name: string; count: number }
+    >();
+
+    for (const item of items) {
+      for (const tag of item.tags) {
+        const existing = map.get(tag.id);
+        if (existing) {
+          existing.count += 1;
+        } else {
+          map.set(tag.id, { id: tag.id, name: tag.name, count: 1 });
+        }
+      }
+    }
+
+    return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
+  }, [items]);
 
   if (tagsInUse.length === 0) return null;
 

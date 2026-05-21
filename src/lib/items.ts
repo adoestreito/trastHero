@@ -4,11 +4,16 @@ import type { StorageItem, StorageItemInput } from "@/types/item";
 import type { StorageTag } from "@/types/tag";
 
 const itemSelect =
-  "*, location:locations(id, name), item_tags(tag:tags(id, name))";
+  "*, location:locations(id, name), item_tags(tags(id, name))";
+
+type ItemTagLink = {
+  tag?: StorageTag | StorageTag[] | null;
+  tags?: StorageTag | StorageTag[] | null;
+};
 
 type ItemRow = Omit<StorageItem, "location" | "tags"> & {
   location: StorageItem["location"] | StorageItem["location"][] | null;
-  item_tags: { tag: StorageTag | StorageTag[] | null }[] | null;
+  item_tags: ItemTagLink[] | null;
 };
 
 function normalizeRelation<T extends { id: string; name: string }>(
@@ -19,11 +24,15 @@ function normalizeRelation<T extends { id: string; name: string }>(
   return value;
 }
 
+function tagFromLink(link: ItemTagLink): Pick<StorageTag, "id" | "name"> | null {
+  return normalizeRelation(link.tags ?? link.tag);
+}
+
 function normalizeItem(row: ItemRow): StorageItem {
   const location = normalizeRelation(row.location);
   const tags = (row.item_tags ?? [])
-    .map((link) => normalizeRelation(link.tag))
-    .filter((t) => t !== null)
+    .map(tagFromLink)
+    .filter((t): t is Pick<StorageTag, "id" | "name"> => t !== null)
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return {
@@ -66,14 +75,13 @@ export async function createItem(input: StorageItemInput): Promise<StorageItem> 
   const { data, error } = await supabase
     .from("items")
     .insert(toDbPayload(input))
-    .select(itemSelect)
+    .select("id")
     .single();
 
   if (error) throw error;
 
-  const item = normalizeItem(data as ItemRow);
-  await syncItemTags(item.id, input.tag_ids ?? []);
-  return fetchItemById(item.id);
+  await syncItemTags(data.id, input.tag_ids ?? []);
+  return fetchItemById(data.id);
 }
 
 export async function updateItem(

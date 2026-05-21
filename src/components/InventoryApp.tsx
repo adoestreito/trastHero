@@ -196,7 +196,6 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
 
       {!loading && (
         <TagFilter
-          tags={tags}
           items={items}
           selectedTagId={selectedTagId}
           onChange={setSelectedTagId}

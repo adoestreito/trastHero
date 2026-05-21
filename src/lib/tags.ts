@@ -51,20 +51,29 @@ export async function syncItemTags(
   tagIds: string[]
 ): Promise<void> {
   const supabase = getSupabase();
-  const uniqueIds = [...new Set(tagIds)];
+  const uniqueIds = [...new Set(tagIds.filter(Boolean))];
 
   const { error: deleteError } = await supabase
     .from("item_tags")
     .delete()
     .eq("item_id", itemId);
 
-  if (deleteError) throw deleteError;
+  if (deleteError) {
+    throw new Error(`Failed to update tags: ${deleteError.message}`);
+  }
 
   if (uniqueIds.length === 0) return;
 
-  const { error: insertError } = await supabase.from("item_tags").insert(
-    uniqueIds.map((tag_id) => ({ item_id: itemId, tag_id }))
-  );
+  const { data, error: insertError } = await supabase
+    .from("item_tags")
+    .insert(uniqueIds.map((tag_id) => ({ item_id: itemId, tag_id })))
+    .select();
 
-  if (insertError) throw insertError;
+  if (insertError) {
+    throw new Error(`Failed to save tags on item: ${insertError.message}`);
+  }
+
+  if (!data?.length) {
+    throw new Error("Tags were not linked to the item. Check database permissions.");
+  }
 }
