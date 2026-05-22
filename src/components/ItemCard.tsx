@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { ItemForm } from "@/components/ItemForm";
+import { useEffect, useRef, useState } from "react";
+import { ItemForm, type ItemFormHandle } from "@/components/ItemForm";
 import { formatDate, getExpirationStatus } from "@/lib/dates";
 import type { StorageLocation } from "@/types/location";
 import type { StorageTag } from "@/types/tag";
@@ -60,15 +60,32 @@ export function ItemCard({
   const [draft, setDraft] = useState<StorageItemDraft>(() => itemToDraft(item));
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const editFormRef = useRef<ItemFormHandle>(null);
+
+  useEffect(() => {
+    if (!editing) {
+      setDraft(itemToDraft(item));
+      setSaveError(null);
+    }
+  }, [item, editing]);
 
   const expStatus = getExpirationStatus(item.expiration_date);
 
   const handleSave = async () => {
     if (!draft.name.trim()) return;
     setSaving(true);
+    setSaveError(null);
     try {
-      await onSave(item.id, draft);
+      const prepared =
+        (await editFormRef.current?.prepareDraft()) ?? {
+          ...draft,
+          tag_ids: draft.tag_ids ?? [],
+        };
+      await onSave(item.id, prepared);
       setEditing(false);
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : "Failed to save");
     } finally {
       setSaving(false);
     }
@@ -93,6 +110,7 @@ export function ItemCard({
     return (
       <article className="rounded-xl border border-accent/40 bg-card p-4 shadow-sm">
         <ItemForm
+          ref={editFormRef}
           draft={draft}
           onChange={setDraft}
           locations={locations}
@@ -102,6 +120,14 @@ export function ItemCard({
           compact
           disabled={disabled || saving}
         />
+        {saveError && (
+          <p
+            role="alert"
+            className="mt-3 rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger"
+          >
+            {saveError}
+          </p>
+        )}
         <div className="mt-4 flex flex-wrap gap-2">
           <button
             type="button"

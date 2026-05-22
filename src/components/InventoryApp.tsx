@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { ItemForm } from "@/components/ItemForm";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ItemForm, type ItemFormHandle } from "@/components/ItemForm";
 import { LocationAccordion } from "@/components/LocationAccordion";
 import { TagFilter } from "@/components/TagFilter";
+import { draftToInput } from "@/lib/draft";
 import {
   createItem,
   deleteItem,
@@ -42,6 +43,7 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
   const [newItem, setNewItem] = useState<StorageItemDraft>(emptyDraft);
   const [adding, setAdding] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
+  const addFormRef = useRef<ItemFormHandle>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -70,7 +72,8 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
     setAdding(true);
     setError(null);
     try {
-      const created = await createItem(newItem);
+      const prepared = (await addFormRef.current?.prepareDraft()) ?? newItem;
+      const created = await createItem(draftToInput(prepared));
       setItems((prev) =>
         [...prev, created].sort((a, b) => a.name.localeCompare(b.name))
       );
@@ -85,12 +88,18 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
 
   const handleSave = async (id: string, draft: StorageItemDraft) => {
     setError(null);
-    const updated = await updateItem(id, draft);
-    setItems((prev) =>
-      prev
-        .map((i) => (i.id === id ? updated : i))
-        .sort((a, b) => a.name.localeCompare(b.name))
-    );
+    try {
+      const updated = await updateItem(id, draftToInput(draft));
+      setItems((prev) =>
+        prev
+          .map((i) => (i.id === id ? updated : i))
+          .sort((a, b) => a.name.localeCompare(b.name))
+      );
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Failed to save item";
+      setError(message);
+      throw e;
+    }
   };
 
   const handleTagCreated = (tag: StorageTag) => {
@@ -208,6 +217,7 @@ export function InventoryApp({ userEmail, onSignOut }: InventoryAppProps) {
             New item
           </h2>
           <ItemForm
+            ref={addFormRef}
             draft={newItem}
             onChange={setNewItem}
             locations={locations}

@@ -8,7 +8,7 @@ export async function fetchTags(): Promise<StorageTag[]> {
     .select("*")
     .order("name", { ascending: true });
 
-  if (error) throw error;
+  if (error) throw new Error(`Failed to load tags: ${error.message}`);
   return data ?? [];
 }
 
@@ -40,7 +40,7 @@ export async function createTag(name: string): Promise<StorageTag> {
         .single();
       if (dup) return dup;
     }
-    throw error;
+    throw new Error(`Failed to create tag: ${error.message}`);
   }
 
   return data;
@@ -53,27 +53,40 @@ export async function syncItemTags(
   const supabase = getSupabase();
   const uniqueIds = [...new Set(tagIds.filter(Boolean))];
 
-  const { error: deleteError } = await supabase
+  const { data: existing, error: fetchError } = await supabase
     .from("item_tags")
-    .delete()
+    .select("tag_id")
     .eq("item_id", itemId);
 
-  if (deleteError) {
-    throw new Error(`Failed to update tags: ${deleteError.message}`);
+  if (fetchError) {
+    throw new Error(`Failed to load item tags: ${fetchError.message}`);
   }
 
-  if (uniqueIds.length === 0) return;
+  const existingIds = new Set((existing ?? []).map((row) => row.tag_id));
+  const toAdd = uniqueIds.filter((id) => !existingIds.has(id));
+  const toRemove = [...existingIds].filter((id) => !uniqueIds.includes(id));
 
-  const { data, error: insertError } = await supabase
-    .from("item_tags")
-    .insert(uniqueIds.map((tag_id) => ({ item_id: itemId, tag_id })))
-    .select();
+  if (toRemove.length > 0) {
+    const { error: deleteError } = await supabase
+      .from("item_tags")
+      .delete()
+      .eq("item_id", itemId)
+      .in("tag_id", toRemove);
+
+    if (deleteError) {
+      throw new Error(`Failed to remove tags: ${deleteError.message}`);
+    }
+  }
+
+  if (toAdd.length === 0) return;
+
+  const { error: insertError } = await supabase.from("item_tags").insert(
+    toAdd.map((tag_id) => ({ item_id: itemId, tag_id }))
+  );
 
   if (insertError) {
-    throw new Error(`Failed to save tags on item: ${insertError.message}`);
-  }
-
-  if (!data?.length) {
-    throw new Error("Tags were not linked to the item. Check database permissions.");
+    throw new Error(
+      `Failed to link tags to item: ${insertError.message}. Run supabase/migrations/006_tags_grants.sql in the SQL Editor.`
+    );
   }
 }

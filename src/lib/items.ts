@@ -71,16 +71,20 @@ export async function fetchItems(): Promise<StorageItem[]> {
 }
 
 export async function createItem(input: StorageItemInput): Promise<StorageItem> {
+  const payload = toDbPayload(input);
+  const tagIds = input.tag_ids ?? [];
+
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("items")
-    .insert(toDbPayload(input))
+    .insert(payload)
     .select("id")
     .single();
 
   if (error) throw error;
 
-  await syncItemTags(data.id, input.tag_ids ?? []);
+  await syncItemTags(data.id, tagIds);
+
   return fetchItemById(data.id);
 }
 
@@ -88,15 +92,18 @@ export async function updateItem(
   id: string,
   input: StorageItemInput
 ): Promise<StorageItem> {
+  const payload = toDbPayload(input);
+  const tagIds = input.tag_ids ?? [];
+
   const supabase = getSupabase();
   const { error } = await supabase
     .from("items")
-    .update(toDbPayload(input))
+    .update(payload)
     .eq("id", id);
 
   if (error) throw error;
 
-  await syncItemTags(id, input.tag_ids ?? []);
+  await syncItemTags(id, tagIds);
   return fetchItemById(id);
 }
 

@@ -9,6 +9,8 @@ type TagInputProps = {
   selectedIds: string[];
   onChange: (tagIds: string[]) => void;
   onTagCreated: (tag: StorageTag) => void;
+  query?: string;
+  onQueryChange?: (query: string) => void;
   disabled?: boolean;
 };
 
@@ -17,9 +19,14 @@ export function TagInput({
   selectedIds,
   onChange,
   onTagCreated,
+  query: controlledQuery,
+  onQueryChange,
   disabled,
 }: TagInputProps) {
-  const [query, setQuery] = useState("");
+  const [internalQuery, setInternalQuery] = useState("");
+  const query = controlledQuery ?? internalQuery;
+  const setQuery = onQueryChange ?? setInternalQuery;
+
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,7 +61,9 @@ export function TagInput({
     const trimmed = raw.trim();
     if (!trimmed) return;
 
-    const existing = tags.find((t) => t.name.toLowerCase() === trimmed.toLowerCase());
+    const existing = tags.find(
+      (t) => t.name.toLowerCase() === trimmed.toLowerCase()
+    );
     if (existing) {
       addTagById(existing.id);
       return;
@@ -109,7 +118,7 @@ export function TagInput({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Type a tag and press Enter…"
+        placeholder="Type a tag (Enter optional — saved with item)"
         disabled={disabled || adding}
         className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
       />
