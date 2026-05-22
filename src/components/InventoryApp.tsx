@@ -16,6 +16,13 @@ import { fetchTags } from "@/lib/tags";
 import type { StorageItem, StorageItemDraft } from "@/types/item";
 import type { StorageLocation } from "@/types/location";
 import type { StorageTag } from "@/types/tag";
+import {
+  alertError,
+  btnPrimary,
+  cardClass,
+  inputClass,
+  sectionLabel,
+} from "@/lib/ui";
 
 const emptyDraft = (): StorageItemDraft => ({
   name: "",
@@ -143,10 +150,7 @@ export function InventoryApp() {
   return (
     <>
       {error && (
-        <div
-          role="alert"
-          className="mb-6 rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger"
-        >
+        <div role="alert" className={`mb-6 ${alertError}`}>
           {error}
         </div>
       )}
@@ -157,7 +161,7 @@ export function InventoryApp() {
           placeholder="Search by name, location, tags, or notes…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 rounded-lg border border-border bg-card px-4 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+          className={`flex-1 ${inputClass}`}
         />
         <button
           type="button"
@@ -165,7 +169,7 @@ export function InventoryApp() {
             setShowAddForm((v) => !v);
             if (showAddForm) setNewItem(emptyDraft());
           }}
-          className="rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white hover:bg-accent-hover"
+          className={btnPrimary}
         >
           {showAddForm ? "Cancel" : "+ Add item"}
         </button>
@@ -180,10 +184,8 @@ export function InventoryApp() {
       )}
 
       {showAddForm && (
-        <section className="mb-8 rounded-xl border border-border bg-card p-5 shadow-sm">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
-            New item
-          </h2>
+        <section className={`mb-8 ${cardClass} p-6`}>
+          <h2 className={`mb-4 ${sectionLabel}`}>New item</h2>
           <ItemForm
             ref={addFormRef}
             draft={newItem}
@@ -198,7 +200,7 @@ export function InventoryApp() {
             type="button"
             onClick={handleAdd}
             disabled={busy || !newItem.name.trim()}
-            className="mt-4 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-50"
+            className={`mt-4 ${btnPrimary}`}
           >
             {adding ? "Adding…" : "Add to inventory"}
           </button>
@@ -208,7 +210,7 @@ export function InventoryApp() {
       {loading ? (
         <p className="text-center text-muted py-12">Loading inventory…</p>
       ) : filtered.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border py-16 text-center text-muted">
+        <p className="rounded-2xl border border-dashed border-border bg-card/50 py-16 text-center text-muted">
           {items.length === 0
             ? "No items yet. Add your first one above."
             : hasActiveFilters

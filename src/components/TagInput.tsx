@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { createTag } from "@/lib/tags";
 import type { StorageTag } from "@/types/tag";
+import { inputClass } from "@/lib/ui";
 
 type TagInputProps = {
   tags: StorageTag[];
@@ -96,7 +97,7 @@ export function TagInput({
           {selectedTags.map((tag) => (
             <span
               key={tag.id}
-              className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent"
+              className="inline-flex items-center gap-1 rounded-full bg-accent-light px-2.5 py-0.5 text-xs font-medium text-accent"
             >
               {tag.name}
               <button
@@ -120,7 +121,7 @@ export function TagInput({
         onKeyDown={handleKeyDown}
         placeholder="Type a tag (Enter optional — saved with item)"
         disabled={disabled || adding}
-        className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+        className={inputClass}
       />
 
       {suggestions.length > 0 && query.trim() !== "" && (
@@ -131,7 +132,7 @@ export function TagInput({
                 type="button"
                 onClick={() => addTagById(tag.id)}
                 disabled={disabled}
-                className="rounded-full border border-border px-2.5 py-0.5 text-xs text-foreground hover:border-accent hover:text-accent disabled:opacity-50"
+                className="rounded-full border border-border bg-card px-2.5 py-1 text-xs text-foreground transition-colors hover:border-accent hover:bg-accent-light hover:text-accent disabled:opacity-50"
               >
                 + {tag.name}
               </button>

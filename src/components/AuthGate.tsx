@@ -15,24 +15,38 @@ export function AuthGate({ children }: AuthGateProps) {
 
   if (loading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center text-muted">
-        Loading…
+      <div className="stripe-mesh flex min-h-screen items-center justify-center">
+        <p className="text-sm text-muted">Loading…</p>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
-        <header className="mb-10 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            TrastHero
-          </h1>
-          <p className="mt-1 text-muted">
-            Family storage room inventory — sign in to continue
-          </p>
+      <div className="stripe-mesh min-h-screen">
+        <header className="stripe-nav">
+          <div className="mx-auto max-w-5xl px-4 py-4 sm:px-6">
+            <span className="text-sm font-semibold tracking-tight text-foreground">
+              TrastHero
+            </span>
+          </div>
         </header>
-        <AuthForm />
+
+        <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24">
+          <div className="mx-auto max-w-lg text-center">
+            <h1 className="stripe-heading">
+              Know what&apos;s in your storage room
+            </h1>
+            <p className="mt-4 text-base leading-relaxed text-muted">
+              Track inventory, expiration dates, and shopping lists — together
+              as a family.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-12 max-w-md">
+            <AuthForm />
+          </div>
+        </div>
       </div>
     );
   }

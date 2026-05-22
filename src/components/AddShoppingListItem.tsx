@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { InventorySuggestion } from "@/types/shoppingList";
+import { btnPrimary, cardClass, inputClass, sectionLabel } from "@/lib/ui";
 
 type AddShoppingListItemProps = {
   suggestions: InventorySuggestion[];
@@ -12,9 +13,6 @@ type AddShoppingListItemProps = {
   }) => Promise<void>;
   disabled?: boolean;
 };
-
-const inputClass =
-  "w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20";
 
 export function AddShoppingListItem({
   suggestions,
@@ -74,11 +72,9 @@ export function AddShoppingListItem({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-xl border border-border bg-card p-5 shadow-sm"
+      className={`${cardClass} p-6`}
     >
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted">
-        Add to shopping list
-      </h2>
+      <h2 className={`mb-4 ${sectionLabel}`}>Add to shopping list</h2>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="sm:col-span-2">
@@ -126,7 +122,7 @@ export function AddShoppingListItem({
                 type="button"
                 onClick={() => pickSuggestion(s)}
                 disabled={disabled || busy}
-                className="rounded-full border border-border px-2.5 py-0.5 text-xs hover:border-accent hover:text-accent disabled:opacity-50"
+                className="rounded-full border border-border bg-card px-2.5 py-1 text-xs transition-colors hover:border-accent hover:bg-accent-light hover:text-accent disabled:opacity-50"
               >
                 {s.name}
                 <span className="ml-1 text-muted">({s.quantity} in stock)</span>
@@ -149,7 +145,7 @@ export function AddShoppingListItem({
       <button
         type="submit"
         disabled={disabled || busy || !name.trim()}
-        className="mt-4 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-50"
+        className={`mt-4 ${btnPrimary}`}
       >
         {busy ? "Adding…" : "Add to list"}
       </button>

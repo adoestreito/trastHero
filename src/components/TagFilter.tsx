@@ -38,17 +38,15 @@ export function TagFilter({
 
   return (
     <div className="mb-6">
-      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">
-        Filter by tag
-      </p>
+      <p className="stripe-section-label mb-2">Filter by tag</p>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
           onClick={() => onChange(null)}
-          className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+          className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-all ${
             selectedTagId === null
-              ? "bg-accent text-white"
-              : "border border-border bg-card text-foreground hover:border-accent"
+              ? "bg-accent text-white shadow-sm"
+              : "border border-border bg-card text-foreground hover:border-accent/50 hover:shadow-stripe-sm"
           }`}
         >
           All
@@ -60,10 +58,10 @@ export function TagFilter({
               key={tag.id}
               type="button"
               onClick={() => onChange(active ? null : tag.id)}
-              className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
+              className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-all ${
                 active
-                  ? "bg-accent text-white"
-                  : "border border-border bg-card text-foreground hover:border-accent"
+                  ? "bg-accent text-white shadow-sm"
+                  : "border border-border bg-card text-foreground hover:border-accent/50 hover:shadow-stripe-sm"
               }`}
             >
               {tag.name}

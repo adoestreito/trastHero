@@ -1,15 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8faf6;
-  --foreground: #1a2e1a;
+  --background: #f6f9fc;
+  --foreground: #0a2540;
   --card: #ffffff;
-  --border: #d4e4d4;
-  --accent: #2d6a4f;
-  --accent-hover: #1b4332;
-  --muted: #6b7c6b;
-  --danger: #c1121f;
-  --warning: #e85d04;
+  --border: #e3e8ee;
+  --accent: #635bff;
+  --accent-hover: #5851ea;
+  --accent-light: #f6f5ff;
+  --muted: #425466;
+  --muted-light: #697386;
+  --danger: #df1b41;
+  --warning: #ff6b00;
+  --shadow-sm: 0 2px 5px -1px rgba(50, 50, 93, 0.06),
+    0 1px 3px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 13px 27px -5px rgba(50, 50, 93, 0.1),
+    0 8px 16px -8px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 30px 60px -12px rgba(50, 50, 93, 0.15),
+    0 18px 36px -18px rgba(0, 0, 0, 0.12);
 }
 
 @theme inline {
@@ -19,17 +27,23 @@
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
+  --color-accent-light: var(--accent-light);
   --color-muted: var(--muted);
+  --color-muted-light: var(--muted-light);
   --color-danger: var(--danger);
   --color-warning: var(--warning);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
+  --shadow-stripe-sm: var(--shadow-sm);
+  --shadow-stripe-md: var(--shadow-md);
+  --shadow-stripe-lg: var(--shadow-lg);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 input,
@@ -37,4 +51,169 @@ textarea,
 select,
 button {
   font: inherit;
+}
+
+/* Stripe-style ambient mesh */
+.stripe-mesh {
+  background-color: var(--background);
+  background-image: radial-gradient(
+      ellipse 80% 50% at 50% -20%,
+      rgba(99, 91, 255, 0.18),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 100% 0%,
+      rgba(255, 107, 0, 0.08),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 50% 30% at 0% 50%,
+      rgba(0, 212, 255, 0.06),
+      transparent
+    );
+}
+
+.stripe-nav {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.stripe-card {
+  background: var(--card);
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.stripe-card-elevated {
+  background: var(--card);
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+.stripe-input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.stripe-input::placeholder {
+  color: var(--muted-light);
+}
+
+.stripe-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.2);
+}
+
+.stripe-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--accent);
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #fff;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+}
+
+.stripe-btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 12px rgba(99, 91, 255, 0.35);
+}
+
+.stripe-btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.stripe-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.stripe-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.stripe-btn-secondary:hover:not(:disabled) {
+  background: var(--background);
+  border-color: #c4cad4;
+  box-shadow: var(--shadow-sm);
+}
+
+.stripe-btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.stripe-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color 0.15s, background 0.15s;
+}
+
+.stripe-btn-ghost:hover:not(:disabled) {
+  color: var(--foreground);
+  background: rgba(10, 37, 64, 0.04);
+}
+
+.stripe-section-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-light);
+}
+
+.stripe-heading {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--foreground);
+}
+
+.stripe-alert-error {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(223, 27, 65, 0.25);
+  background: rgba(223, 27, 65, 0.06);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--danger);
+}
+
+.stripe-alert-success {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(99, 91, 255, 0.25);
+  background: var(--accent-light);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--accent);
 }

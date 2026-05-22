@@ -6,6 +6,12 @@ import { formatDate, getExpirationStatus } from "@/lib/dates";
 import type { StorageLocation } from "@/types/location";
 import type { StorageTag } from "@/types/tag";
 import type { StorageItem, StorageItemDraft } from "@/types/item";
+import {
+  alertError,
+  btnPrimary,
+  btnSecondary,
+  cardClass,
+} from "@/lib/ui";
 
 type ItemCardProps = {
   item: StorageItem;
@@ -109,7 +115,7 @@ export function ItemCard({
 
   if (editing) {
     return (
-      <article className="rounded-xl border border-accent/40 bg-card p-4 shadow-sm">
+      <article className={`${cardClass} border-accent/30 p-4 ring-2 ring-accent/15`}>
         <ItemForm
           ref={editFormRef}
           draft={draft}
@@ -124,7 +130,7 @@ export function ItemCard({
         {saveError && (
           <p
             role="alert"
-            className="mt-3 rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger"
+            className={`mt-3 ${alertError}`}
           >
             {saveError}
           </p>
@@ -134,7 +140,7 @@ export function ItemCard({
             type="button"
             onClick={handleSave}
             disabled={disabled || saving || !draft.name.trim()}
-            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-50"
+            className={btnPrimary}
           >
             {saving ? "Saving…" : "Save"}
           </button>
@@ -142,7 +148,7 @@ export function ItemCard({
             type="button"
             onClick={handleCancel}
             disabled={disabled || saving}
-            className="rounded-lg border border-border px-4 py-2 text-sm text-foreground hover:bg-background disabled:opacity-50"
+            className={btnSecondary}
           >
             Cancel
           </button>
@@ -152,12 +158,12 @@ export function ItemCard({
   }
 
   return (
-    <article className="rounded-xl border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
+    <article className={`${cardClass} p-4 transition-shadow hover:shadow-stripe-md`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="text-lg font-semibold text-foreground">{item.name}</h2>
-            <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-sm font-medium text-accent">
+            <span className="rounded-full bg-accent-light px-2.5 py-0.5 text-sm font-medium text-accent">
               ×{item.quantity}
             </span>
             {statusLabel[expStatus] && (
@@ -174,7 +180,7 @@ export function ItemCard({
               {item.tags.map((tag) => (
                 <span
                   key={tag.id}
-                  className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent"
+                  className="rounded-full bg-accent-light px-2 py-0.5 text-xs font-medium text-accent"
                 >
                   {tag.name}
                 </span>
@@ -209,7 +215,7 @@ export function ItemCard({
             type="button"
             onClick={() => setEditing(true)}
             disabled={disabled || deleting}
-            className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium hover:bg-background disabled:opacity-50"
+            className={`${btnSecondary} !py-2 !text-xs`}
           >
             Edit
           </button>
@@ -217,7 +223,7 @@ export function ItemCard({
             type="button"
             onClick={handleDelete}
             disabled={disabled || deleting}
-            className="rounded-lg border border-danger/30 px-3 py-1.5 text-sm font-medium text-danger hover:bg-danger/5 disabled:opacity-50"
+            className={`${btnSecondary} !border-danger/30 !py-2 !text-xs !text-danger hover:!bg-danger/5 disabled:opacity-50`}
           >
             {deleting ? "…" : "Delete"}
           </button>

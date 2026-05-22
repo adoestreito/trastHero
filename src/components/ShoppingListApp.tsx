@@ -14,6 +14,7 @@ import type {
   InventorySuggestion,
   ShoppingListEntry,
 } from "@/types/shoppingList";
+import { alertError, sectionLabel } from "@/lib/ui";
 
 function filterVisible(
   entries: ShoppingListEntry[],
@@ -105,10 +106,7 @@ export function ShoppingListApp() {
   return (
     <>
       {error && (
-        <div
-          role="alert"
-          className="mb-6 rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger"
-        >
+        <div role="alert" className={`mb-6 ${alertError}`}>
           {error}
         </div>
       )}
@@ -140,7 +138,7 @@ export function ShoppingListApp() {
       {loading ? (
         <p className="py-12 text-center text-muted">Loading shopping list…</p>
       ) : isEmpty ? (
-        <p className="rounded-xl border border-dashed border-border py-16 text-center text-muted">
+        <p className="rounded-2xl border border-dashed border-border bg-card/50 py-16 text-center text-muted">
           {entries.length === 0
             ? "Your shopping list is empty."
             : "No pending items. Toggle “Show purchased” to see completed buys."}
@@ -148,9 +146,7 @@ export function ShoppingListApp() {
       ) : (
         <div className="flex flex-col gap-8">
           <section>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
-              Shopping list — to buy
-            </h2>
+            <h2 className={`mb-3 ${sectionLabel}`}>Shopping list — to buy</h2>
             <p className="mb-3 text-xs text-muted">
               Inventory items marked for shopping with quantity 0
             </p>
@@ -173,9 +169,7 @@ export function ShoppingListApp() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
-              Keep an eye
-            </h2>
+            <h2 className={`mb-3 ${sectionLabel}`}>Keep an eye</h2>
             <p className="mb-3 text-xs text-muted">
               Marked for shopping list but still in stock (quantity greater than
               0)

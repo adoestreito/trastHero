@@ -1,6 +1,7 @@
 "use client";
 
 import type { ShoppingListEntry } from "@/types/shoppingList";
+import { btnSecondary, cardClass } from "@/lib/ui";
 
 type ShoppingListEntryRowProps = {
   entry: ShoppingListEntry;
@@ -17,8 +18,8 @@ export function ShoppingListEntryRow({
 
   return (
     <li
-      className={`flex flex-wrap items-center gap-3 rounded-xl border bg-card p-4 shadow-sm ${
-        entry.purchased ? "border-border opacity-60" : "border-border"
+      className={`flex flex-wrap items-center gap-3 ${cardClass} p-4 ${
+        entry.purchased ? "opacity-60" : ""
       }`}
     >
       {!isWatch && onTogglePurchased ? (
@@ -65,7 +66,7 @@ export function ShoppingListEntryRow({
       <button
         type="button"
         onClick={() => onDelete(entry.id)}
-        className="rounded-lg border border-danger/30 px-3 py-1.5 text-sm font-medium text-danger hover:bg-danger/5"
+        className={`${btnSecondary} !border-danger/30 !text-xs !text-danger hover:!bg-danger/5`}
       >
         Remove
       </button>

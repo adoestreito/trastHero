@@ -2,11 +2,15 @@
 
 import { useState } from "react";
 import { getSupabase } from "@/lib/supabase/client";
+import {
+  alertError,
+  alertSuccess,
+  btnPrimary,
+  cardElevatedClass,
+  inputClass,
+} from "@/lib/ui";
 
 type Mode = "sign-in" | "sign-up";
-
-const inputClass =
-  "w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20";
 
 export function AuthForm() {
   const [mode, setMode] = useState<Mode>("sign-in");
@@ -54,9 +58,16 @@ export function AuthForm() {
     }
   };
 
+  const tabClass = (active: boolean) =>
+    `flex-1 rounded-full py-2.5 text-sm font-medium transition-colors ${
+      active
+        ? "bg-accent text-white shadow-sm"
+        : "text-muted hover:text-foreground"
+    }`;
+
   return (
-    <div className="mx-auto w-full max-w-md">
-      <div className="mb-6 flex rounded-lg border border-border bg-card p-1">
+    <div className="w-full">
+      <div className="mb-6 flex rounded-full border border-border bg-card p-1 shadow-stripe-sm">
         <button
           type="button"
           onClick={() => {
@@ -64,11 +75,7 @@ export function AuthForm() {
             setError(null);
             setMessage(null);
           }}
-          className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
-            mode === "sign-in"
-              ? "bg-accent text-white"
-              : "text-muted hover:text-foreground"
-          }`}
+          className={tabClass(mode === "sign-in")}
         >
           Sign in
         </button>
@@ -79,32 +86,25 @@ export function AuthForm() {
             setError(null);
             setMessage(null);
           }}
-          className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
-            mode === "sign-up"
-              ? "bg-accent text-white"
-              : "text-muted hover:text-foreground"
-          }`}
+          className={tabClass(mode === "sign-up")}
         >
           Create account
         </button>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="rounded-xl border border-border bg-card p-6 shadow-sm"
-      >
-        <h2 className="text-lg font-semibold text-foreground">
+      <form onSubmit={handleSubmit} className={`${cardElevatedClass} p-8`}>
+        <h2 className="text-xl font-semibold tracking-tight text-foreground">
           {mode === "sign-in" ? "Family sign in" : "Create family account"}
         </h2>
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-2 text-sm leading-relaxed text-muted">
           {mode === "sign-in"
             ? "Use the email and password your family set up."
             : "Each family member can create their own account."}
         </p>
 
-        <div className="mt-5 space-y-4">
+        <div className="mt-6 space-y-4">
           <label className="block">
-            <span className="mb-1 block text-xs font-medium text-muted">
+            <span className="mb-1.5 block text-xs font-medium text-muted-light">
               Email
             </span>
             <input
@@ -118,7 +118,7 @@ export function AuthForm() {
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-xs font-medium text-muted">
+            <span className="mb-1.5 block text-xs font-medium text-muted-light">
               Password
             </span>
             <input
@@ -136,24 +136,19 @@ export function AuthForm() {
         </div>
 
         {error && (
-          <p
-            role="alert"
-            className="mt-4 rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger"
-          >
+          <p role="alert" className={`mt-4 ${alertError}`}>
             {error}
           </p>
         )}
 
         {message && (
-          <p className="mt-4 rounded-lg border border-accent/30 bg-accent/10 px-3 py-2 text-sm text-accent">
-            {message}
-          </p>
+          <p className={`mt-4 ${alertSuccess}`}>{message}</p>
         )}
 
         <button
           type="submit"
           disabled={busy}
-          className="mt-5 w-full rounded-lg bg-accent py-2.5 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-50"
+          className={`mt-6 w-full ${btnPrimary} !py-3`}
         >
           {busy
             ? "Please wait…"

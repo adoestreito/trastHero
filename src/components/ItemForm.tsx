@@ -11,6 +11,7 @@ import { resolveDraftTags } from "@/lib/resolveDraftTags";
 import type { StorageLocation } from "@/types/location";
 import type { StorageTag } from "@/types/tag";
 import type { StorageItemDraft } from "@/types/item";
+import { inputClass } from "@/lib/ui";
 
 export type ItemFormHandle = {
   /** Applies pending tag text and returns draft ready to save. */
@@ -27,9 +28,6 @@ type ItemFormProps = {
   compact?: boolean;
   disabled?: boolean;
 };
-
-const inputClass =
-  "w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20";
 
 export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
   function ItemForm(

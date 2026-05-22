@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { btnSecondary } from "@/lib/ui";
 
 type AppLayoutProps = {
   userEmail: string;
@@ -13,10 +14,10 @@ type AppLayoutProps = {
 };
 
 const navLinkClass = (active: boolean) =>
-  `rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+  `rounded-full px-4 py-2 text-sm font-medium transition-colors ${
     active
-      ? "bg-accent text-white"
-      : "text-muted hover:bg-background hover:text-foreground"
+      ? "bg-accent text-white shadow-sm"
+      : "text-muted hover:bg-foreground/[0.04] hover:text-foreground"
   }`;
 
 export function AppLayout({
@@ -30,19 +31,17 @@ export function AppLayout({
   const [signingOut, setSigningOut] = useState(false);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-      <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-accent">
+    <div className="stripe-mesh min-h-screen">
+      <header className="stripe-nav sticky top-0 z-10">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <Link
+            href="/"
+            className="text-sm font-semibold tracking-tight text-foreground"
+          >
             TrastHero
-          </p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground">
-            {title}
-          </h1>
-          <p className="mt-1 text-muted">{subtitle}</p>
-        </div>
-        <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-center">
-          <nav className="flex gap-1 rounded-lg border border-border bg-card p-1">
+          </Link>
+
+          <nav className="flex gap-1 rounded-full border border-border bg-card/80 p-1 shadow-stripe-sm">
             <Link href="/" className={navLinkClass(pathname === "/")}>
               Inventory
             </Link>
@@ -53,8 +52,11 @@ export function AppLayout({
               Shopping list
             </Link>
           </nav>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted">{userEmail}</span>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="hidden max-w-[12rem] truncate text-sm text-muted sm:inline">
+              {userEmail}
+            </span>
             <button
               type="button"
               disabled={signingOut}
@@ -66,7 +68,7 @@ export function AppLayout({
                   setSigningOut(false);
                 }
               }}
-              className="rounded-lg border border-border px-3 py-1.5 text-sm font-medium hover:bg-background disabled:opacity-50"
+              className={`${btnSecondary} !py-2 !text-xs`}
             >
               {signingOut ? "Signing out…" : "Sign out"}
             </button>
@@ -74,7 +76,16 @@ export function AppLayout({
         </div>
       </header>
 
-      {children}
+      <main className="mx-auto max-w-5xl px-4 pb-16 pt-10 sm:px-6">
+        <div className="mb-10">
+          <h1 className="stripe-heading">{title}</h1>
+          <p className="mt-2 max-w-xl text-base leading-relaxed text-muted">
+            {subtitle}
+          </p>
+        </div>
+
+        {children}
+      </main>
     </div>
   );
 }

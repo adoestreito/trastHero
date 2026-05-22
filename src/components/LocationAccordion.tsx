@@ -6,6 +6,7 @@ import { groupItemsByLocation } from "@/lib/groupByLocation";
 import type { StorageItem, StorageItemDraft } from "@/types/item";
 import type { StorageLocation } from "@/types/location";
 import type { StorageTag } from "@/types/tag";
+import { cardClass } from "@/lib/ui";
 
 type LocationAccordionProps = {
   items: StorageItem[];
@@ -69,24 +70,24 @@ export function LocationAccordion({
         return (
           <section
             key={group.key}
-            className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+            className={`overflow-hidden ${cardClass}`}
           >
             <button
               type="button"
               onClick={() => toggle(group.key)}
               aria-expanded={isOpen}
-              className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-background/80"
+              className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-foreground/[0.02]"
             >
               <span
-                className={`shrink-0 text-muted transition-transform ${isOpen ? "rotate-90" : ""}`}
+                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-light text-xs text-accent transition-transform ${isOpen ? "rotate-90" : ""}`}
                 aria-hidden
               >
-                ▶
+                ›
               </span>
-              <span className="min-w-0 flex-1 font-semibold text-foreground">
+              <span className="min-w-0 flex-1 text-base font-semibold tracking-tight text-foreground">
                 {group.title}
               </span>
-              <span className="shrink-0 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
+              <span className="shrink-0 rounded-full bg-accent-light px-2.5 py-0.5 text-xs font-medium text-accent">
                 {group.items.length} item{group.items.length === 1 ? "" : "s"}
                 {totalQty !== group.items.length && (
                   <span className="text-muted"> · {totalQty} units</span>

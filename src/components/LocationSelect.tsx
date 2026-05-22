@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createLocation } from "@/lib/locations";
 import type { StorageLocation } from "@/types/location";
+import { btnPrimary, btnSecondary, inputClass } from "@/lib/ui";
 
 type LocationSelectProps = {
   locations: StorageLocation[];
@@ -11,9 +12,6 @@ type LocationSelectProps = {
   onLocationCreated: (location: StorageLocation) => void;
   disabled?: boolean;
 };
-
-const inputClass =
-  "w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20";
 
 export function LocationSelect({
   locations,
@@ -89,7 +87,7 @@ export function LocationSelect({
             type="button"
             onClick={handleAddLocation}
             disabled={disabled || adding || !newName.trim()}
-            className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-50"
+            className={`${btnPrimary} !text-xs`}
           >
             {adding ? "Adding…" : "Save location"}
           </button>
@@ -101,7 +99,7 @@ export function LocationSelect({
               setAddError(null);
             }}
             disabled={adding}
-            className="rounded-lg border border-border px-3 py-2 text-sm hover:bg-background disabled:opacity-50"
+            className={`${btnSecondary} !text-xs`}
           >
             Cancel
           </button>
