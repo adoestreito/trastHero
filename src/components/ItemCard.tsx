@@ -28,6 +28,7 @@ function itemToDraft(item: StorageItem): StorageItemDraft {
     expiration_date: item.expiration_date,
     location_id: item.location_id,
     tag_ids: item.tags.map((t) => t.id),
+    on_shopping_list: item.on_shopping_list,
   };
 }
 

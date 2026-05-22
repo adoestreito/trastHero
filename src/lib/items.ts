@@ -1,4 +1,5 @@
 import { getSupabase } from "@/lib/supabase/client";
+import { syncShoppingListFromItem } from "@/lib/shoppingList";
 import { syncItemTags } from "@/lib/tags";
 import type { StorageItem, StorageItemInput } from "@/types/item";
 import type { StorageTag } from "@/types/tag";
@@ -42,6 +43,7 @@ function normalizeItem(row: ItemRow): StorageItem {
     description: row.description,
     expiration_date: row.expiration_date,
     location_id: row.location_id,
+    on_shopping_list: row.on_shopping_list ?? false,
     created_at: row.created_at,
     updated_at: row.updated_at,
     location,
@@ -56,7 +58,18 @@ function toDbPayload(input: StorageItemInput) {
     description: input.description?.trim() || null,
     expiration_date: input.expiration_date || null,
     location_id: input.location_id || null,
+    on_shopping_list: input.on_shopping_list ?? false,
   };
+}
+
+async function finalizeItem(
+  id: string,
+  tagIds: string[]
+): Promise<StorageItem> {
+  await syncItemTags(id, tagIds);
+  const item = await fetchItemById(id);
+  await syncShoppingListFromItem(item);
+  return fetchItemById(id);
 }
 
 export async function fetchItems(): Promise<StorageItem[]> {
@@ -83,9 +96,7 @@ export async function createItem(input: StorageItemInput): Promise<StorageItem> 
 
   if (error) throw error;
 
-  await syncItemTags(data.id, tagIds);
-
-  return fetchItemById(data.id);
+  return finalizeItem(data.id, tagIds);
 }
 
 export async function updateItem(
@@ -103,8 +114,7 @@ export async function updateItem(
 
   if (error) throw error;
 
-  await syncItemTags(id, tagIds);
-  return fetchItemById(id);
+  return finalizeItem(id, tagIds);
 }
 
 async function fetchItemById(id: string): Promise<StorageItem> {

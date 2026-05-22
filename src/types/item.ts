@@ -8,6 +8,7 @@ export type StorageItem = {
   description: string | null;
   expiration_date: string | null;
   location_id: string | null;
+  on_shopping_list: boolean;
   location: Pick<StorageLocation, "id" | "name"> | null;
   tags: Pick<StorageTag, "id" | "name">[];
   created_at: string;
@@ -21,6 +22,7 @@ export type StorageItemInput = {
   expiration_date?: string | null;
   location_id?: string | null;
   tag_ids?: string[];
+  on_shopping_list?: boolean;
 };
 
 export type StorageItemDraft = StorageItemInput & {

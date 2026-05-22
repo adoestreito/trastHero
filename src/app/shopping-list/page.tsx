@@ -2,10 +2,10 @@
 
 import { AppLayout } from "@/components/AppLayout";
 import { AuthGate } from "@/components/AuthGate";
-import { InventoryApp } from "@/components/InventoryApp";
+import { ShoppingListApp } from "@/components/ShoppingListApp";
 import { AuthProvider } from "@/components/AuthProvider";
 
-export default function Home() {
+export default function ShoppingListPage() {
   return (
     <AuthProvider>
       <AuthGate>
@@ -13,10 +13,10 @@ export default function Home() {
           <AppLayout
             userEmail={userEmail}
             onSignOut={onSignOut}
-            title="Inventory"
-            subtitle="Family storage room inventory"
+            title="Shopping list"
+            subtitle="Things to buy for the storage room"
           >
-            <InventoryApp />
+            <ShoppingListApp />
           </AppLayout>
         )}
       </AuthGate>

@@ -98,7 +98,10 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
             min={0}
             value={draft.quantity}
             onChange={(e) =>
-              set("quantity", Math.max(0, parseInt(e.target.value, 10) || 0))
+              set(
+                "quantity",
+                Math.max(0, parseInt(e.target.value, 10) || 0)
+              )
             }
             required
             disabled={disabled}
@@ -144,6 +147,26 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
             onQueryChange={setTagQuery}
             disabled={disabled}
           />
+        </label>
+
+        <label
+          className={`flex items-center gap-2 ${compact ? "sm:col-span-2 lg:col-span-3" : "sm:col-span-2"}`}
+        >
+          <input
+            type="checkbox"
+            checked={draft.on_shopping_list ?? false}
+            disabled={disabled}
+            onChange={(e) => set("on_shopping_list", e.target.checked)}
+            className="h-4 w-4 rounded border-border text-accent focus:ring-accent/20"
+          />
+          <span className="text-sm text-foreground">
+            Add to shopping list
+            <span className="block text-xs font-normal text-muted">
+              {draft.quantity === 0
+                ? "Goes to shopping list (out of stock)"
+                : "Goes to keep an eye (still in stock)"}
+            </span>
+          </span>
         </label>
 
         <label className={compact ? "sm:col-span-6" : "sm:col-span-2"}>

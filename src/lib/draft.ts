@@ -9,5 +9,6 @@ export function draftToInput(draft: StorageItemDraft): StorageItemInput {
     expiration_date: draft.expiration_date ?? null,
     location_id: draft.location_id ?? null,
     tag_ids: draft.tag_ids ?? [],
+    on_shopping_list: draft.on_shopping_list ?? false,
   };
 }
