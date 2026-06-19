@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { HoldRepeatButton } from "@/components/HoldRepeatButton";
 
 const ACTION_WIDTH = 132;
 const SNAP_THRESHOLD = 44;
@@ -9,8 +10,8 @@ type SwipeableItemActionsProps = {
   children: React.ReactNode;
   disabled?: boolean;
   quantity: number;
-  onIncrease: () => void;
-  onDecrease: () => void;
+  onAdjust: (delta: number) => boolean;
+  onAdjustEnd: () => void;
   onDelete: () => void;
   busy?: boolean;
 };
@@ -41,8 +42,8 @@ export function SwipeableItemActions({
   children,
   disabled,
   quantity,
-  onIncrease,
-  onDecrease,
+  onAdjust,
+  onAdjustEnd,
   onDelete,
   busy,
 }: SwipeableItemActionsProps) {
@@ -106,10 +107,8 @@ export function SwipeableItemActions({
     snap();
   };
 
-  const runAction = (action: () => void) => {
-    close();
-    action();
-  };
+  const decrease = useCallback(() => onAdjust(-1), [onAdjust]);
+  const increase = useCallback(() => onAdjust(1), [onAdjust]);
 
   return (
     <div className="relative overflow-hidden rounded-2xl">
@@ -117,29 +116,32 @@ export function SwipeableItemActions({
         className="absolute inset-y-0 left-0 z-0 flex w-[8.25rem] items-stretch md:hidden"
         aria-hidden={offset === 0}
       >
-        <button
-          type="button"
-          aria-label="Decrease quantity"
+        <HoldRepeatButton
+          label="Decrease quantity"
           disabled={disabled || busy || quantity <= 0}
-          onClick={() => runAction(onDecrease)}
-          className="flex flex-1 items-center justify-center bg-accent/90 text-lg font-semibold text-accent-foreground transition-colors hover:bg-accent disabled:opacity-40"
+          onRepeat={decrease}
+          onRelease={onAdjustEnd}
+          className="flex flex-1 select-none items-center justify-center bg-accent/90 text-lg font-semibold text-accent-foreground transition-colors active:bg-accent disabled:opacity-40"
         >
           −
-        </button>
-        <button
-          type="button"
-          aria-label="Increase quantity"
+        </HoldRepeatButton>
+        <HoldRepeatButton
+          label="Increase quantity"
           disabled={disabled || busy}
-          onClick={() => runAction(onIncrease)}
-          className="flex flex-1 items-center justify-center bg-accent text-lg font-semibold text-accent-foreground transition-colors hover:bg-accent-hover disabled:opacity-40"
+          onRepeat={increase}
+          onRelease={onAdjustEnd}
+          className="flex flex-1 select-none items-center justify-center bg-accent text-lg font-semibold text-accent-foreground transition-colors active:bg-accent-hover disabled:opacity-40"
         >
           +
-        </button>
+        </HoldRepeatButton>
         <button
           type="button"
           aria-label="Delete item"
           disabled={disabled || busy}
-          onClick={() => runAction(onDelete)}
+          onClick={() => {
+            close();
+            onDelete();
+          }}
           className="flex flex-1 items-center justify-center bg-danger text-accent-foreground transition-colors hover:bg-danger/90 disabled:opacity-40"
         >
           <TrashIcon />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ItemForm, type ItemFormHandle } from "@/components/ItemForm";
 import { SwipeableItemActions } from "@/components/SwipeableItemActions";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -70,9 +70,27 @@ export function ItemCard({
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [adjusting, setAdjusting] = useState(false);
+  const [displayQuantity, setDisplayQuantity] = useState(item.quantity);
   const [saveError, setSaveError] = useState<string | null>(null);
   const editFormRef = useRef<ItemFormHandle>(null);
+  const quantityRef = useRef(item.quantity);
+  const savedQuantityRef = useRef(item.quantity);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveInFlightRef = useRef(false);
+  const pendingSaveRef = useRef(false);
   const isMobile = useMediaQuery("(max-width: 767px)");
+
+  useEffect(() => {
+    quantityRef.current = item.quantity;
+    savedQuantityRef.current = item.quantity;
+    setDisplayQuantity(item.quantity);
+  }, [item.id, item.quantity]);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!editing) {
@@ -108,6 +126,64 @@ export function ItemCard({
     setEditing(false);
   };
 
+  const flushQuantitySave = useCallback(async () => {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+
+    if (quantityRef.current === savedQuantityRef.current) return;
+
+    if (saveInFlightRef.current) {
+      pendingSaveRef.current = true;
+      return;
+    }
+
+    saveInFlightRef.current = true;
+    setAdjusting(true);
+    const target = quantityRef.current;
+
+    try {
+      await onSave(item.id, { ...itemToDraft(item), quantity: target });
+      savedQuantityRef.current = target;
+    } catch {
+      /* parent surfaces error */
+    } finally {
+      saveInFlightRef.current = false;
+      setAdjusting(false);
+      if (pendingSaveRef.current) {
+        pendingSaveRef.current = false;
+        if (quantityRef.current !== savedQuantityRef.current) {
+          void flushQuantitySave();
+        }
+      }
+    }
+  }, [item, onSave]);
+
+  const scheduleQuantitySave = useCallback(() => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      void flushQuantitySave();
+    }, 350);
+  }, [flushQuantitySave]);
+
+  const adjustQuantityBy = useCallback(
+    (delta: number): boolean => {
+      const next = Math.max(0, quantityRef.current + delta);
+      if (next === quantityRef.current) return false;
+
+      quantityRef.current = next;
+      setDisplayQuantity(next);
+      scheduleQuantitySave();
+      return true;
+    },
+    [scheduleQuantitySave]
+  );
+
+  const handleAdjustEnd = useCallback(() => {
+    void flushQuantitySave();
+  }, [flushQuantitySave]);
+
   const handleDelete = async () => {
     if (!confirm(`Delete "${item.name}"?`)) return;
     setDeleting(true);
@@ -115,20 +191,6 @@ export function ItemCard({
       await onDelete(item.id);
     } finally {
       setDeleting(false);
-    }
-  };
-
-  const adjustQuantity = async (delta: number) => {
-    const next = Math.max(0, item.quantity + delta);
-    if (next === item.quantity) return;
-
-    setAdjusting(true);
-    try {
-      await onSave(item.id, { ...itemToDraft(item), quantity: next });
-    } catch {
-      /* parent surfaces error */
-    } finally {
-      setAdjusting(false);
     }
   };
 
@@ -180,7 +242,7 @@ export function ItemCard({
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="text-lg font-semibold text-foreground">{item.name}</h2>
             <span className="rounded-full bg-accent-light px-2.5 py-0.5 text-sm font-medium text-accent">
-              ×{item.quantity}
+              ×{displayQuantity}
             </span>
             {adjusting && (
               <span className="text-xs text-muted">Updating…</span>
@@ -267,10 +329,10 @@ export function ItemCard({
   return (
     <SwipeableItemActions
       disabled={actionBusy}
-      quantity={item.quantity}
+      quantity={displayQuantity}
       busy={actionBusy}
-      onIncrease={() => adjustQuantity(1)}
-      onDecrease={() => adjustQuantity(-1)}
+      onAdjust={adjustQuantityBy}
+      onAdjustEnd={handleAdjustEnd}
       onDelete={handleDelete}
     >
       {card}
