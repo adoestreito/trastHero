@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ItemForm, type ItemFormHandle } from "@/components/ItemForm";
+import { SwipeableItemActions } from "@/components/SwipeableItemActions";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { formatDate, getExpirationStatus } from "@/lib/dates";
 import type { StorageLocation } from "@/types/location";
 import type { StorageTag } from "@/types/tag";
@@ -67,8 +69,10 @@ export function ItemCard({
   const [draft, setDraft] = useState<StorageItemDraft>(() => itemToDraft(item));
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [adjusting, setAdjusting] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const editFormRef = useRef<ItemFormHandle>(null);
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   useEffect(() => {
     if (!editing) {
@@ -78,6 +82,7 @@ export function ItemCard({
   }, [item, editing]);
 
   const expStatus = getExpirationStatus(item.expiration_date);
+  const actionBusy = disabled || deleting || adjusting || saving;
 
   const handleSave = async () => {
     if (!draft.name.trim()) return;
@@ -113,6 +118,20 @@ export function ItemCard({
     }
   };
 
+  const adjustQuantity = async (delta: number) => {
+    const next = Math.max(0, item.quantity + delta);
+    if (next === item.quantity) return;
+
+    setAdjusting(true);
+    try {
+      await onSave(item.id, { ...itemToDraft(item), quantity: next });
+    } catch {
+      /* parent surfaces error */
+    } finally {
+      setAdjusting(false);
+    }
+  };
+
   if (editing) {
     return (
       <article className={`${cardClass} border-accent/30 p-4 ring-2 ring-accent/15`}>
@@ -128,10 +147,7 @@ export function ItemCard({
           disabled={disabled || saving}
         />
         {saveError && (
-          <p
-            role="alert"
-            className={`mt-3 ${alertError}`}
-          >
+          <p role="alert" className={`mt-3 ${alertError}`}>
             {saveError}
           </p>
         )}
@@ -157,7 +173,7 @@ export function ItemCard({
     );
   }
 
-  return (
+  const card = (
     <article className={`${cardClass} p-4 transition-shadow hover:shadow-fj-md`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
@@ -166,6 +182,9 @@ export function ItemCard({
             <span className="rounded-full bg-accent-light px-2.5 py-0.5 text-sm font-medium text-accent">
               ×{item.quantity}
             </span>
+            {adjusting && (
+              <span className="text-xs text-muted">Updating…</span>
+            )}
             {statusLabel[expStatus] && (
               <span
                 className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusClass[expStatus]}`}
@@ -210,11 +229,11 @@ export function ItemCard({
           </dl>
         </div>
 
-        <div className="flex shrink-0 gap-2">
+        <div className="hidden shrink-0 gap-2 sm:flex">
           <button
             type="button"
             onClick={() => setEditing(true)}
-            disabled={disabled || deleting}
+            disabled={actionBusy}
             className={`${btnSecondary} !py-2 !text-xs`}
           >
             Edit
@@ -222,13 +241,39 @@ export function ItemCard({
           <button
             type="button"
             onClick={handleDelete}
-            disabled={disabled || deleting}
+            disabled={actionBusy}
             className={`${btnSecondary} !border-danger/30 !py-2 !text-xs !text-danger hover:!bg-danger/5 disabled:opacity-50`}
           >
             {deleting ? "…" : "Delete"}
           </button>
         </div>
       </div>
+
+      <div className="mt-3 flex gap-2 sm:hidden">
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          disabled={actionBusy}
+          className={`${btnSecondary} flex-1 !py-2 !text-xs`}
+        >
+          Edit
+        </button>
+      </div>
     </article>
+  );
+
+  if (!isMobile) return card;
+
+  return (
+    <SwipeableItemActions
+      disabled={actionBusy}
+      quantity={item.quantity}
+      busy={actionBusy}
+      onIncrease={() => adjustQuantity(1)}
+      onDecrease={() => adjustQuantity(-1)}
+      onDelete={handleDelete}
+    >
+      {card}
+    </SwipeableItemActions>
   );
 }
