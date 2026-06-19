@@ -20,6 +20,7 @@ import {
   alertError,
   btnPrimary,
   cardClass,
+  emptyState,
   inputClass,
   sectionLabel,
 } from "@/lib/ui";
@@ -210,7 +211,7 @@ export function InventoryApp() {
       {loading ? (
         <p className="text-center text-muted py-12">Loading inventory…</p>
       ) : filtered.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-border bg-card/50 py-16 text-center text-muted">
+        <p className={`${emptyState} py-16 text-center text-muted`}>
           {items.length === 0
             ? "No items yet. Add your first one above."
             : hasActiveFilters

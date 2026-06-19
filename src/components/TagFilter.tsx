@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { sectionLabel } from "@/lib/ui";
 import type { StorageItem } from "@/types/item";
 
 type TagFilterProps = {
@@ -38,15 +39,15 @@ export function TagFilter({
 
   return (
     <div className="mb-6">
-      <p className="stripe-section-label mb-2">Filter by tag</p>
+      <p className={`${sectionLabel} mb-2`}>Filter by tag</p>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
           onClick={() => onChange(null)}
           className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-all ${
             selectedTagId === null
-              ? "bg-accent text-white shadow-sm"
-              : "border border-border bg-card text-foreground hover:border-accent/50 hover:shadow-stripe-sm"
+              ? "fj-pill-active"
+              : "border border-border bg-card/80 text-foreground hover:border-accent/40 fj-hover-surface"
           }`}
         >
           All
@@ -60,13 +61,13 @@ export function TagFilter({
               onClick={() => onChange(active ? null : tag.id)}
               className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-all ${
                 active
-                  ? "bg-accent text-white shadow-sm"
-                  : "border border-border bg-card text-foreground hover:border-accent/50 hover:shadow-stripe-sm"
+                  ? "fj-pill-active"
+                  : "border border-border bg-card/80 text-foreground hover:border-accent/40 fj-hover-surface"
               }`}
             >
               {tag.name}
               <span
-                className={`ml-1.5 ${active ? "text-white/80" : "text-muted"}`}
+                className={`ml-1.5 ${active ? "text-accent-foreground/70" : "text-muted"}`}
               >
                 {tag.count}
               </span>

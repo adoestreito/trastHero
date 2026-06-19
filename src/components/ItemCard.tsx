@@ -158,7 +158,7 @@ export function ItemCard({
   }
 
   return (
-    <article className={`${cardClass} p-4 transition-shadow hover:shadow-stripe-md`}>
+    <article className={`${cardClass} p-4 transition-shadow hover:shadow-fj-md`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">

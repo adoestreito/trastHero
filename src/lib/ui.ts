@@ -1,19 +1,23 @@
-/** Shared Stripe-inspired class names used across components. */
+/** Fishjam-inspired design tokens (dark + cyan). */
 
-export const inputClass = "stripe-input";
+export const inputClass = "fj-input";
 
-export const btnPrimary = "stripe-btn-primary";
+export const btnPrimary = "fj-btn-primary";
 
-export const btnSecondary = "stripe-btn-secondary";
+export const btnSecondary = "fj-btn-secondary";
 
-export const btnGhost = "stripe-btn-ghost";
+export const btnGhost = "fj-btn-ghost";
 
-export const cardClass = "stripe-card";
+export const cardClass = "fj-card";
 
-export const cardElevatedClass = "stripe-card-elevated";
+export const cardElevatedClass = "fj-card-elevated";
 
-export const sectionLabel = "stripe-section-label";
+export const sectionLabel = "fj-section-label";
 
-export const alertError = "stripe-alert-error";
+export const alertError = "fj-alert-error";
 
-export const alertSuccess = "stripe-alert-success";
+export const alertSuccess = "fj-alert-success";
+
+export const emptyState = "fj-empty";
+
+export const chipClass = "fj-chip";

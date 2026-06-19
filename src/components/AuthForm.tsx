@@ -61,13 +61,13 @@ export function AuthForm() {
   const tabClass = (active: boolean) =>
     `flex-1 rounded-full py-2.5 text-sm font-medium transition-colors ${
       active
-        ? "bg-accent text-white shadow-sm"
-        : "text-muted hover:text-foreground"
+        ? "fj-pill-active"
+        : "text-muted fj-hover-surface hover:text-foreground"
     }`;
 
   return (
     <div className="w-full">
-      <div className="mb-6 flex rounded-full border border-border bg-card p-1 shadow-stripe-sm">
+      <div className="mb-6 flex rounded-full border border-border bg-card/80 p-1 shadow-fj-sm backdrop-blur-sm">
         <button
           type="button"
           onClick={() => {

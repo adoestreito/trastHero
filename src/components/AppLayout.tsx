@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { btnSecondary } from "@/lib/ui";
 
 type AppLayoutProps = {
@@ -14,10 +15,10 @@ type AppLayoutProps = {
 };
 
 const navLinkClass = (active: boolean) =>
-  `rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+  `rounded-full px-4 py-2 text-sm font-medium transition-all ${
     active
-      ? "bg-accent text-white shadow-sm"
-      : "text-muted hover:bg-foreground/[0.04] hover:text-foreground"
+      ? "fj-pill-active"
+      : "text-muted fj-hover-surface hover:text-foreground"
   }`;
 
 export function AppLayout({
@@ -31,17 +32,18 @@ export function AppLayout({
   const [signingOut, setSigningOut] = useState(false);
 
   return (
-    <div className="stripe-mesh min-h-screen">
-      <header className="stripe-nav sticky top-0 z-10">
+    <div className="fj-mesh min-h-screen">
+      <header className="fj-nav sticky top-0 z-10">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <Link
             href="/"
-            className="text-sm font-semibold tracking-tight text-foreground"
+            className="flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground"
           >
+            <span className="fj-badge-dot" aria-hidden />
             TrastHero
           </Link>
 
-          <nav className="flex gap-1 rounded-full border border-border bg-card/80 p-1 shadow-stripe-sm">
+          <nav className="flex gap-1 rounded-full border border-border bg-card/60 p-1 shadow-fj-sm backdrop-blur-sm">
             <Link href="/" className={navLinkClass(pathname === "/")}>
               Inventory
             </Link>
@@ -54,7 +56,8 @@ export function AppLayout({
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="hidden max-w-[12rem] truncate text-sm text-muted sm:inline">
+            <ThemeToggle className="hidden sm:flex" />
+            <span className="hidden max-w-[12rem] truncate text-sm text-muted md:inline">
               {userEmail}
             </span>
             <button
@@ -77,9 +80,17 @@ export function AppLayout({
       </header>
 
       <main className="mx-auto max-w-5xl px-4 pb-16 pt-10 sm:px-6">
+        <div className="mb-6 flex justify-end sm:hidden">
+          <ThemeToggle />
+        </div>
+
         <div className="mb-10">
-          <h1 className="stripe-heading">{title}</h1>
-          <p className="mt-2 max-w-xl text-base leading-relaxed text-muted">
+          <span className="fj-badge mb-4">
+            <span className="fj-badge-dot" aria-hidden />
+            Family storage
+          </span>
+          <h1 className="fj-heading mt-3">{title}</h1>
+          <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">
             {subtitle}
           </p>
         </div>

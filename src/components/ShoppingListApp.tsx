@@ -14,7 +14,7 @@ import type {
   InventorySuggestion,
   ShoppingListEntry,
 } from "@/types/shoppingList";
-import { alertError, sectionLabel } from "@/lib/ui";
+import { alertError, emptyState, sectionLabel } from "@/lib/ui";
 
 function filterVisible(
   entries: ShoppingListEntry[],
@@ -138,7 +138,7 @@ export function ShoppingListApp() {
       {loading ? (
         <p className="py-12 text-center text-muted">Loading shopping list…</p>
       ) : isEmpty ? (
-        <p className="rounded-2xl border border-dashed border-border bg-card/50 py-16 text-center text-muted">
+        <p className={`${emptyState} py-16 text-center text-muted`}>
           {entries.length === 0
             ? "Your shopping list is empty."
             : "No pending items. Toggle “Show purchased” to see completed buys."}
@@ -151,7 +151,7 @@ export function ShoppingListApp() {
               Inventory items marked for shopping with quantity 0
             </p>
             {visibleToBuy.length === 0 ? (
-              <p className="rounded-lg border border-dashed border-border py-8 text-center text-sm text-muted">
+              <p className={`${emptyState} py-8 text-center text-sm text-muted`}>
                 Nothing to buy right now.
               </p>
             ) : (
@@ -175,7 +175,7 @@ export function ShoppingListApp() {
               0)
             </p>
             {visibleKeepAnEye.length === 0 ? (
-              <p className="rounded-lg border border-dashed border-border py-8 text-center text-sm text-muted">
+              <p className={`${emptyState} py-8 text-center text-sm text-muted`}>
                 No items to watch.
               </p>
             ) : (
