@@ -100,7 +100,7 @@ export function LocationAccordion({
 
             {isOpen && (
               <ul className="flex flex-col gap-3 border-t border-border px-4 py-4">
-                {group.items.map((item) => (
+                {group.items.map((item, index) => (
                   <li key={item.id}>
                     <ItemCard
                       item={item}
@@ -112,6 +112,7 @@ export function LocationAccordion({
                       onDelete={onDelete}
                       disabled={disabled}
                       hideLocation
+                      swipeDemoHint={index === 0}
                     />
                   </li>
                 ))}

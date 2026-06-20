@@ -10,12 +10,7 @@ export default function ShoppingListPage() {
     <AuthProvider>
       <AuthGate>
         {({ userEmail, onSignOut }) => (
-          <AppLayout
-            userEmail={userEmail}
-            onSignOut={onSignOut}
-            title="Shopping list"
-            subtitle="Things to buy for the storage room"
-          >
+          <AppLayout userEmail={userEmail} onSignOut={onSignOut}>
             <ShoppingListApp />
           </AppLayout>
         )}

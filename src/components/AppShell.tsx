@@ -9,12 +9,7 @@ export function AppShell() {
   return (
     <AuthGate>
       {({ userEmail, onSignOut }) => (
-        <AppLayout
-          userEmail={userEmail}
-          onSignOut={onSignOut}
-          title="Inventory"
-          subtitle="Family storage room inventory"
-        >
+        <AppLayout userEmail={userEmail} onSignOut={onSignOut}>
           <InventoryApp />
         </AppLayout>
       )}

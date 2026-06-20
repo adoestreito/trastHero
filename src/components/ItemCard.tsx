@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ItemForm, type ItemFormHandle } from "@/components/ItemForm";
 import { SwipeableItemActions } from "@/components/SwipeableItemActions";
+import { dismissSwipeHint, SWIPE_HINT_KEY } from "@/components/SwipeHintBanner";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { formatDate, getExpirationStatus } from "@/lib/dates";
 import type { StorageLocation } from "@/types/location";
@@ -25,6 +26,7 @@ type ItemCardProps = {
   onDelete: (id: string) => Promise<void>;
   disabled?: boolean;
   hideLocation?: boolean;
+  swipeDemoHint?: boolean;
 };
 
 function itemToDraft(item: StorageItem): StorageItemDraft {
@@ -64,6 +66,7 @@ export function ItemCard({
   onDelete,
   disabled,
   hideLocation,
+  swipeDemoHint,
 }: ItemCardProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<StorageItemDraft>(() => itemToDraft(item));
@@ -79,6 +82,19 @@ export function ItemCard({
   const saveInFlightRef = useRef(false);
   const pendingSaveRef = useRef(false);
   const isMobile = useMediaQuery("(max-width: 767px)");
+  const [showSwipeDemo, setShowSwipeDemo] = useState(false);
+
+  useEffect(() => {
+    if (!isMobile || !swipeDemoHint) {
+      setShowSwipeDemo(false);
+      return;
+    }
+    try {
+      setShowSwipeDemo(localStorage.getItem(SWIPE_HINT_KEY) !== "1");
+    } catch {
+      setShowSwipeDemo(true);
+    }
+  }, [isMobile, swipeDemoHint]);
 
   useEffect(() => {
     quantityRef.current = item.quantity;
@@ -310,17 +326,6 @@ export function ItemCard({
           </button>
         </div>
       </div>
-
-      <div className="mt-3 flex gap-2 sm:hidden">
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          disabled={actionBusy}
-          className={`${btnSecondary} flex-1 !py-2 !text-xs`}
-        >
-          Edit
-        </button>
-      </div>
     </article>
   );
 
@@ -334,6 +339,11 @@ export function ItemCard({
       onAdjust={adjustQuantityBy}
       onAdjustEnd={handleAdjustEnd}
       onDelete={handleDelete}
+      onEdit={() => {
+        dismissSwipeHint();
+        setEditing(true);
+      }}
+      demoHint={showSwipeDemo}
     >
       {card}
     </SwipeableItemActions>

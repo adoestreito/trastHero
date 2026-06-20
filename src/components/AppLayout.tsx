@@ -10,8 +10,6 @@ import { btnSecondary } from "@/lib/ui";
 type AppLayoutProps = {
   userEmail: string;
   onSignOut: () => Promise<void>;
-  title: string;
-  subtitle: string;
   children: React.ReactNode;
 };
 
@@ -25,8 +23,6 @@ const navLinkClass = (active: boolean) =>
 export function AppLayout({
   userEmail,
   onSignOut,
-  title,
-  subtitle,
   children,
 }: AppLayoutProps) {
   const pathname = usePathname();
@@ -105,20 +101,7 @@ export function AppLayout({
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-3 pb-12 pt-3 sm:px-6 sm:pb-16 sm:pt-10">
-        <div className="mb-4 sm:mb-10">
-          <span className="fj-badge mb-4 hidden sm:inline-flex">
-            <span className="fj-badge-dot" aria-hidden />
-            Family storage
-          </span>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground sm:fj-heading sm:mt-3">
-            {title}
-          </h1>
-          <p className="mt-3 hidden max-w-xl text-base leading-relaxed text-muted sm:block">
-            {subtitle}
-          </p>
-        </div>
-
+      <main className="mx-auto max-w-5xl px-3 pb-12 pt-3 sm:px-6 sm:pb-16 sm:pt-4">
         {children}
       </main>
     </div>

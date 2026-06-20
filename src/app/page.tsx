@@ -10,12 +10,7 @@ export default function Home() {
     <AuthProvider>
       <AuthGate>
         {({ userEmail, onSignOut }) => (
-          <AppLayout
-            userEmail={userEmail}
-            onSignOut={onSignOut}
-            title="Tu trastero"
-            subtitle="Encuentra lo que necesitas en tu trastero"
-          >
+          <AppLayout userEmail={userEmail} onSignOut={onSignOut}>
             <InventoryApp />
           </AppLayout>
         )}

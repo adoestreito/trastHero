@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ItemForm, type ItemFormHandle } from "@/components/ItemForm";
 import { LocationAccordion } from "@/components/LocationAccordion";
+import { SwipeHintBanner } from "@/components/SwipeHintBanner";
 import { TagFilter } from "@/components/TagFilter";
 import { draftToInput } from "@/lib/draft";
 import {
@@ -219,7 +220,9 @@ export function InventoryApp() {
               : "No items match your search."}
         </p>
       ) : (
-        <LocationAccordion
+        <>
+          <SwipeHintBanner />
+          <LocationAccordion
           items={filtered}
           locations={locations}
           tags={tags}
@@ -230,6 +233,7 @@ export function InventoryApp() {
           onDelete={handleDelete}
           disabled={busy}
         />
+        </>
       )}
 
       {!loading && items.length > 0 && (
