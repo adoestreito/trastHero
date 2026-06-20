@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ItemForm, type ItemFormHandle } from "@/components/ItemForm";
 import { LocationAccordion } from "@/components/LocationAccordion";
+import { MobileAddItemDrawer } from "@/components/MobileAddItemDrawer";
 import { SwipeHintBanner } from "@/components/SwipeHintBanner";
 import { TagFilter } from "@/components/TagFilter";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { draftToInput } from "@/lib/draft";
 import {
   createItem,
@@ -47,7 +49,9 @@ export function InventoryApp() {
   const [newItem, setNewItem] = useState<StorageItemDraft>(emptyDraft);
   const [adding, setAdding] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [mobileAddOpen, setMobileAddOpen] = useState(false);
   const addFormRef = useRef<ItemFormHandle>(null);
+  const isMobile = useMediaQuery("(max-width: 767px)");
 
   const load = useCallback(async () => {
     setError(null);
@@ -71,6 +75,12 @@ export function InventoryApp() {
     load();
   }, [load]);
 
+  const closeAdd = useCallback(() => {
+    setShowAddForm(false);
+    setMobileAddOpen(false);
+    setNewItem(emptyDraft());
+  }, []);
+
   const handleAdd = async () => {
     if (!newItem.name.trim()) return;
     setAdding(true);
@@ -81,8 +91,7 @@ export function InventoryApp() {
       setItems((prev) =>
         [...prev, created].sort((a, b) => a.name.localeCompare(b.name))
       );
-      setNewItem(emptyDraft());
-      setShowAddForm(false);
+      closeAdd();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to add item");
     } finally {
@@ -122,6 +131,24 @@ export function InventoryApp() {
     });
   };
 
+  const handleLocationUpdated = (location: StorageLocation) => {
+    setLocations((prev) =>
+      [...prev.map((l) => (l.id === location.id ? location : l))].sort(
+        (a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name)
+      )
+    );
+    setItems((prev) =>
+      prev.map((item) =>
+        item.location_id === location.id
+          ? {
+              ...item,
+              location: { id: location.id, name: location.name },
+            }
+          : item
+      )
+    );
+  };
+
   const handleDelete = async (id: string) => {
     setError(null);
     await deleteItem(id);
@@ -149,6 +176,68 @@ export function InventoryApp() {
 
   const busy = loading || adding;
 
+  const addForm = (
+    <ItemForm
+      ref={addFormRef}
+      draft={newItem}
+      onChange={setNewItem}
+      locations={locations}
+      tags={tags}
+      onLocationCreated={handleLocationCreated}
+      onLocationUpdated={handleLocationUpdated}
+      onTagCreated={handleTagCreated}
+      disabled={busy}
+    />
+  );
+
+  const inventoryBody = (
+    <>
+      {!loading && (
+        <TagFilter
+          items={items}
+          selectedTagId={selectedTagId}
+          onChange={setSelectedTagId}
+        />
+      )}
+
+      {loading ? (
+        <p className="py-12 text-center text-muted">Loading inventory…</p>
+      ) : filtered.length === 0 ? (
+        <p className={`${emptyState} py-16 text-center text-muted`}>
+          {items.length === 0
+            ? isMobile
+              ? "No items yet. Swipe left or tap + on the edge to add one."
+              : "No items yet. Add your first one above."
+            : hasActiveFilters
+              ? "No items match your filters."
+              : "No items match your search."}
+        </p>
+      ) : (
+        <>
+          <SwipeHintBanner />
+          <LocationAccordion
+            items={filtered}
+            locations={locations}
+            tags={tags}
+            expandAllSections={hasActiveFilters}
+            onLocationCreated={handleLocationCreated}
+            onLocationUpdated={handleLocationUpdated}
+            onTagCreated={handleTagCreated}
+            onSave={handleSave}
+            onDelete={handleDelete}
+            disabled={busy}
+          />
+        </>
+      )}
+
+      {!loading && items.length > 0 && (
+        <p className="mt-8 text-center text-xs text-muted">
+          {items.length} item{items.length === 1 ? "" : "s"} in storage
+        </p>
+      )}
+    </>
+  );
+
   return (
     <>
       {error && (
@@ -168,36 +257,28 @@ export function InventoryApp() {
         <button
           type="button"
           onClick={() => {
+            if (isMobile) {
+              setMobileAddOpen(true);
+              return;
+            }
             setShowAddForm((v) => !v);
             if (showAddForm) setNewItem(emptyDraft());
           }}
-          className={btnPrimary}
+          className={`${btnPrimary} hidden sm:inline-flex`}
         >
           {showAddForm ? "Cancel" : "+ Add item"}
         </button>
+        {isMobile && (
+          <p className="text-center text-xs text-muted sm:hidden">
+            Swipe left on the list or tap <span className="font-semibold text-accent">+</span> on the right edge to add
+          </p>
+        )}
       </div>
 
-      {!loading && (
-        <TagFilter
-          items={items}
-          selectedTagId={selectedTagId}
-          onChange={setSelectedTagId}
-        />
-      )}
-
-      {showAddForm && (
+      {showAddForm && !isMobile && (
         <section className={`mb-8 ${cardClass} p-6`}>
           <h2 className={`mb-4 ${sectionLabel}`}>New item</h2>
-          <ItemForm
-            ref={addFormRef}
-            draft={newItem}
-            onChange={setNewItem}
-            locations={locations}
-            tags={tags}
-            onLocationCreated={handleLocationCreated}
-            onTagCreated={handleTagCreated}
-            disabled={busy}
-          />
+          {addForm}
           <button
             type="button"
             onClick={handleAdd}
@@ -209,37 +290,20 @@ export function InventoryApp() {
         </section>
       )}
 
-      {loading ? (
-        <p className="text-center text-muted py-12">Loading inventory…</p>
-      ) : filtered.length === 0 ? (
-        <p className={`${emptyState} py-16 text-center text-muted`}>
-          {items.length === 0
-            ? "No items yet. Add your first one above."
-            : hasActiveFilters
-              ? "No items match your filters."
-              : "No items match your search."}
-        </p>
+      {isMobile ? (
+        <MobileAddItemDrawer
+          open={mobileAddOpen}
+          onOpen={() => setMobileAddOpen(true)}
+          onClose={closeAdd}
+          onSubmit={handleAdd}
+          submitting={adding}
+          canSubmit={!!newItem.name.trim()}
+          surface={inventoryBody}
+        >
+          {addForm}
+        </MobileAddItemDrawer>
       ) : (
-        <>
-          <SwipeHintBanner />
-          <LocationAccordion
-          items={filtered}
-          locations={locations}
-          tags={tags}
-          expandAllSections={hasActiveFilters}
-          onLocationCreated={handleLocationCreated}
-          onTagCreated={handleTagCreated}
-          onSave={handleSave}
-          onDelete={handleDelete}
-          disabled={busy}
-        />
-        </>
-      )}
-
-      {!loading && items.length > 0 && (
-        <p className="mt-8 text-center text-xs text-muted">
-          {items.length} item{items.length === 1 ? "" : "s"} in storage
-        </p>
+        inventoryBody
       )}
     </>
   );

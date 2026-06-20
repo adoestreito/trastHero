@@ -14,6 +14,7 @@ type LocationAccordionProps = {
   tags: StorageTag[];
   expandAllSections?: boolean;
   onLocationCreated: (location: StorageLocation) => void;
+  onLocationUpdated: (location: StorageLocation) => void;
   onTagCreated: (tag: StorageTag) => void;
   onSave: (id: string, draft: StorageItemDraft) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
@@ -37,6 +38,7 @@ export function LocationAccordion({
   tags,
   expandAllSections = false,
   onLocationCreated,
+  onLocationUpdated,
   onTagCreated,
   onSave,
   onDelete,
@@ -136,6 +138,7 @@ export function LocationAccordion({
                       locations={locations}
                       tags={tags}
                       onLocationCreated={onLocationCreated}
+                      onLocationUpdated={onLocationUpdated}
                       onTagCreated={onTagCreated}
                       onSave={onSave}
                       onDelete={onDelete}

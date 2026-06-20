@@ -55,3 +55,28 @@ export async function createLocation(name: string): Promise<StorageLocation> {
 
   return data;
 }
+
+export async function updateLocation(
+  id: string,
+  name: string
+): Promise<StorageLocation> {
+  const trimmed = name.trim();
+  if (!trimmed) throw new Error("Location name is required");
+
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("locations")
+    .update({ name: trimmed })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
+    if (error.code === "23505") {
+      throw new Error("A location with that name already exists");
+    }
+    throw error;
+  }
+
+  return data;
+}

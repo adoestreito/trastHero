@@ -21,6 +21,7 @@ type ItemCardProps = {
   locations: StorageLocation[];
   tags: StorageTag[];
   onLocationCreated: (location: StorageLocation) => void;
+  onLocationUpdated: (location: StorageLocation) => void;
   onTagCreated: (tag: StorageTag) => void;
   onSave: (id: string, draft: StorageItemDraft) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
@@ -62,6 +63,7 @@ export function ItemCard({
   locations,
   tags,
   onLocationCreated,
+  onLocationUpdated,
   onTagCreated,
   onSave,
   onDelete,
@@ -208,6 +210,7 @@ export function ItemCard({
           locations={locations}
           tags={tags}
           onLocationCreated={onLocationCreated}
+          onLocationUpdated={onLocationUpdated}
           onTagCreated={onTagCreated}
           compact
           disabled={disabled || saving}

@@ -23,6 +23,7 @@ type ItemFormProps = {
   onChange: (draft: StorageItemDraft) => void;
   locations: StorageLocation[];
   onLocationCreated: (location: StorageLocation) => void;
+  onLocationUpdated: (location: StorageLocation) => void;
   tags: StorageTag[];
   onTagCreated: (tag: StorageTag) => void;
   compact?: boolean;
@@ -36,6 +37,7 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
       onChange,
       locations,
       onLocationCreated,
+      onLocationUpdated,
       tags,
       onTagCreated,
       compact,
@@ -115,6 +117,7 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
             value={draft.location_id ?? null}
             onChange={(locationId) => set("location_id", locationId)}
             onLocationCreated={onLocationCreated}
+            onLocationUpdated={onLocationUpdated}
             disabled={disabled}
           />
         </label>
