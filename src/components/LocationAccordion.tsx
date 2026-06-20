@@ -49,7 +49,10 @@ export function LocationAccordion({
       setOpenKeys(new Set(groups.map((g) => g.key)));
       return;
     }
-    setOpenKeys(new Set([groups[0].key]));
+    setOpenKeys((prev) => {
+      const valid = new Set(groups.map((g) => g.key));
+      return new Set([...prev].filter((k) => valid.has(k)));
+    });
   }, [groupKeys, expandAllSections, groups]);
 
   const toggle = (key: string) => {

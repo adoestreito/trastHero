@@ -1,28 +1,36 @@
 @import "tailwindcss";
 
-/* Fishjam-inspired: cyan accents, glass nav, soft glow mesh — light & dark */
+/* TrastHero brand: blue #016dd0 · yellow #fed406 · red #fa030c */
 
 :root,
 [data-theme="dark"] {
-  --background: #06080f;
-  --foreground: #e8edf5;
-  --card: #0d121f;
-  --card-elevated: #111827;
+  --brand-blue: #016dd0;
+  --brand-yellow: #fed406;
+  --brand-red: #fa030c;
+  --background: #040e1a;
+  --foreground: #eef4fc;
+  --card: #0a1830;
+  --card-elevated: #0d2040;
   --border: rgba(148, 163, 184, 0.14);
   --border-strong: rgba(148, 163, 184, 0.22);
-  --accent: #22d3ee;
-  --accent-hover: #06b6d4;
-  --accent-light: rgba(34, 211, 238, 0.12);
-  --accent-glow: rgba(34, 211, 238, 0.35);
-  --accent-foreground: #041016;
+  --accent: var(--brand-blue);
+  --accent-hover: #0288f5;
+  --accent-light: rgba(1, 109, 208, 0.16);
+  --accent-glow: rgba(1, 109, 208, 0.4);
+  --accent-foreground: #ffffff;
+  --highlight: var(--brand-yellow);
+  --highlight-light: rgba(254, 212, 6, 0.24);
+  --highlight-glow: rgba(254, 212, 6, 0.55);
+  --danger-light: rgba(250, 3, 12, 0.16);
+  --danger-glow: rgba(250, 3, 12, 0.4);
   --muted: #94a3b8;
   --muted-light: #64748b;
-  --danger: #fb7185;
-  --warning: #fbbf24;
+  --danger: var(--brand-red);
+  --warning: var(--brand-yellow);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.55);
-  --nav-background: rgba(6, 8, 15, 0.72);
+  --nav-background: rgba(4, 14, 26, 0.82);
   --surface-input: rgba(255, 255, 255, 0.04);
   --surface-input-hover: rgba(255, 255, 255, 0.06);
   --surface-input-focus: rgba(255, 255, 255, 0.05);
@@ -32,43 +40,53 @@
   --surface-badge: rgba(255, 255, 255, 0.04);
   --surface-empty: rgba(255, 255, 255, 0.02);
   --surface-hover: rgba(255, 255, 255, 0.06);
-  --mesh-1: rgba(34, 211, 238, 0.14);
-  --mesh-2: rgba(99, 102, 241, 0.1);
-  --mesh-3: rgba(34, 211, 238, 0.06);
+  --mesh-1: rgba(1, 109, 208, 0.22);
+  --mesh-2: rgba(254, 212, 6, 0.2);
+  --mesh-3: rgba(250, 3, 12, 0.14);
+  --mesh-4: rgba(254, 212, 6, 0.1);
 }
 
 [data-theme="light"] {
-  --background: #f4f7fb;
-  --foreground: #0f172a;
+  --brand-blue: #016dd0;
+  --brand-yellow: #fed406;
+  --brand-red: #fa030c;
+  --background: #f0f6fd;
+  --foreground: #0a1628;
   --card: #ffffff;
-  --card-elevated: #f8fafc;
-  --border: rgba(15, 23, 42, 0.08);
-  --border-strong: rgba(15, 23, 42, 0.14);
-  --accent: #0891b2;
-  --accent-hover: #0e7490;
-  --accent-light: rgba(8, 145, 178, 0.1);
-  --accent-glow: rgba(8, 145, 178, 0.22);
+  --card-elevated: #f8fbff;
+  --border: rgba(1, 109, 208, 0.1);
+  --border-strong: rgba(1, 109, 208, 0.16);
+  --accent: var(--brand-blue);
+  --accent-hover: #0156a8;
+  --accent-light: rgba(1, 109, 208, 0.1);
+  --accent-glow: rgba(1, 109, 208, 0.22);
   --accent-foreground: #ffffff;
-  --muted: #64748b;
-  --muted-light: #94a3b8;
-  --danger: #e11d48;
-  --warning: #d97706;
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 8px 32px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 24px 48px rgba(15, 23, 42, 0.1);
-  --nav-background: rgba(255, 255, 255, 0.82);
-  --surface-input: rgba(15, 23, 42, 0.03);
-  --surface-input-hover: rgba(15, 23, 42, 0.05);
+  --highlight: var(--brand-yellow);
+  --highlight-light: rgba(254, 212, 6, 0.32);
+  --highlight-glow: rgba(254, 212, 6, 0.45);
+  --danger-light: rgba(250, 3, 12, 0.12);
+  --danger-glow: rgba(250, 3, 12, 0.28);
+  --muted: #5a6b82;
+  --muted-light: #8b9bb0;
+  --danger: var(--brand-red);
+  --warning: #b88600;
+  --shadow-sm: 0 1px 2px rgba(10, 22, 40, 0.06);
+  --shadow-md: 0 8px 32px rgba(10, 22, 40, 0.08);
+  --shadow-lg: 0 24px 48px rgba(10, 22, 40, 0.1);
+  --nav-background: rgba(255, 255, 255, 0.88);
+  --surface-input: rgba(1, 109, 208, 0.04);
+  --surface-input-hover: rgba(1, 109, 208, 0.07);
   --surface-input-focus: #ffffff;
-  --surface-secondary: rgba(15, 23, 42, 0.03);
-  --surface-secondary-hover: rgba(15, 23, 42, 0.06);
-  --surface-ghost-hover: rgba(15, 23, 42, 0.05);
-  --surface-badge: rgba(15, 23, 42, 0.04);
-  --surface-empty: rgba(15, 23, 42, 0.02);
-  --surface-hover: rgba(15, 23, 42, 0.05);
-  --mesh-1: rgba(8, 145, 178, 0.14);
-  --mesh-2: rgba(99, 102, 241, 0.08);
-  --mesh-3: rgba(8, 145, 178, 0.07);
+  --surface-secondary: rgba(1, 109, 208, 0.04);
+  --surface-secondary-hover: rgba(1, 109, 208, 0.08);
+  --surface-ghost-hover: rgba(1, 109, 208, 0.06);
+  --surface-badge: rgba(1, 109, 208, 0.06);
+  --surface-empty: rgba(1, 109, 208, 0.03);
+  --surface-hover: rgba(1, 109, 208, 0.06);
+  --mesh-1: rgba(1, 109, 208, 0.16);
+  --mesh-2: rgba(254, 212, 6, 0.22);
+  --mesh-3: rgba(250, 3, 12, 0.1);
+  --mesh-4: rgba(254, 212, 6, 0.14);
 }
 
 @theme inline {
@@ -80,6 +98,9 @@
   --color-accent-hover: var(--accent-hover);
   --color-accent-light: var(--accent-light);
   --color-accent-foreground: var(--accent-foreground);
+  --color-highlight: var(--highlight);
+  --color-highlight-light: var(--highlight-light);
+  --color-danger-light: var(--danger-light);
   --color-muted: var(--muted);
   --color-muted-light: var(--muted-light);
   --color-danger: var(--danger);
@@ -112,33 +133,55 @@ button {
 .fj-mesh {
   background-color: var(--background);
   background-image: radial-gradient(
-      ellipse 90% 55% at 50% -15%,
+      ellipse 95% 60% at 50% -20%,
       var(--mesh-1),
-      transparent 55%
+      transparent 58%
     ),
     radial-gradient(
-      ellipse 50% 40% at 100% 0%,
+      ellipse 55% 45% at 100% 5%,
       var(--mesh-2),
-      transparent 50%
+      transparent 52%
     ),
     radial-gradient(
-      ellipse 40% 35% at 0% 40%,
+      ellipse 50% 40% at 0% 55%,
       var(--mesh-3),
-      transparent 45%
+      transparent 48%
+    ),
+    radial-gradient(
+      ellipse 45% 35% at 85% 90%,
+      var(--mesh-4),
+      transparent 50%
     );
 }
 
 .fj-nav {
+  position: relative;
   background: var(--nav-background);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
 }
 
+.fj-nav::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--brand-blue) 0%,
+    var(--brand-yellow) 50%,
+    var(--brand-red) 100%
+  );
+  opacity: 0.9;
+}
+
 .fj-card {
   background: var(--card);
   border-radius: 1rem;
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--highlight) 14%, var(--border));
   box-shadow: var(--shadow-sm);
 }
 
@@ -146,7 +189,7 @@ button {
   background: linear-gradient(
     165deg,
     var(--card-elevated) 0%,
-    var(--card) 100%
+    color-mix(in srgb, var(--highlight-light) 35%, var(--card)) 100%
   );
   border-radius: 1rem;
   border: 1px solid var(--border-strong);
@@ -195,7 +238,9 @@ button {
 
 .fj-btn-primary:hover:not(:disabled) {
   background: var(--accent-hover);
-  box-shadow: 0 0 24px var(--accent-glow);
+  box-shadow:
+    0 0 20px var(--accent-glow),
+    0 0 36px var(--highlight-glow);
 }
 
 .fj-btn-primary:active:not(:disabled) {
@@ -253,7 +298,7 @@ button {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--muted-light);
+  color: color-mix(in srgb, var(--highlight) 72%, var(--muted-light));
 }
 
 .fj-heading {
@@ -266,9 +311,10 @@ button {
 
 .fj-heading-gradient {
   background: linear-gradient(
-    135deg,
-    var(--foreground) 0%,
-    var(--accent) 120%
+    120deg,
+    var(--accent) 0%,
+    var(--highlight) 52%,
+    var(--danger) 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -280,39 +326,47 @@ button {
   align-items: center;
   gap: 0.375rem;
   border-radius: 9999px;
-  border: 1px solid var(--border);
-  background: var(--surface-badge);
+  border: 1px solid color-mix(in srgb, var(--highlight) 45%, var(--border));
+  background: var(--highlight-light);
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--muted);
+  color: color-mix(in srgb, var(--highlight) 35%, var(--foreground));
 }
 
 .fj-badge-dot {
   height: 0.375rem;
   width: 0.375rem;
   border-radius: 9999px;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent-glow);
+  background: var(--highlight);
+  box-shadow: 0 0 8px var(--highlight-glow);
 }
 
 .fj-alert-error {
   border-radius: 0.75rem;
-  border: 1px solid rgba(251, 113, 133, 0.35);
-  background: rgba(251, 113, 133, 0.1);
+  border: 1px solid rgba(250, 3, 12, 0.45);
+  background: linear-gradient(
+    135deg,
+    var(--danger-light) 0%,
+    rgba(250, 3, 12, 0.08) 100%
+  );
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
   color: var(--danger);
 }
 
 [data-theme="light"] .fj-alert-error {
-  border-color: rgba(225, 29, 72, 0.25);
-  background: rgba(225, 29, 72, 0.06);
+  border-color: rgba(250, 3, 12, 0.3);
+  background: linear-gradient(
+    135deg,
+    var(--danger-light) 0%,
+    rgba(250, 3, 12, 0.04) 100%
+  );
 }
 
 .fj-alert-success {
   border-radius: 0.75rem;
-  border: 1px solid rgba(34, 211, 238, 0.35);
+  border: 1px solid rgba(1, 109, 208, 0.35);
   background: var(--accent-light);
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
@@ -320,15 +374,25 @@ button {
 }
 
 .fj-pill-active {
-  background: var(--accent);
+  background: linear-gradient(
+    135deg,
+    var(--accent) 0%,
+    color-mix(in srgb, var(--accent) 55%, var(--highlight)) 100%
+  );
   color: var(--accent-foreground);
-  box-shadow: 0 0 20px var(--accent-glow);
+  box-shadow:
+    0 0 18px var(--accent-glow),
+    0 0 28px var(--highlight-glow);
 }
 
 .fj-chip {
   border-radius: 9999px;
-  border: 1px solid rgba(34, 211, 238, 0.25);
-  background: var(--accent-light);
+  border: 1px solid color-mix(in srgb, var(--highlight) 40%, var(--accent));
+  background: linear-gradient(
+    135deg,
+    var(--accent-light) 0%,
+    var(--highlight-light) 100%
+  );
   padding: 0.125rem 0.625rem;
   font-size: 0.75rem;
   font-weight: 500;
@@ -336,11 +400,15 @@ button {
 }
 
 [data-theme="light"] .fj-chip {
-  border-color: rgba(8, 145, 178, 0.25);
+  border-color: color-mix(in srgb, var(--highlight) 50%, var(--accent));
 }
 
 .fj-empty {
   border-radius: 1rem;
-  border: 1px dashed var(--border-strong);
-  background: var(--surface-empty);
+  border: 1px dashed color-mix(in srgb, var(--highlight) 35%, var(--border-strong));
+  background: linear-gradient(
+    135deg,
+    var(--surface-empty) 0%,
+    var(--highlight-light) 100%
+  );
 }

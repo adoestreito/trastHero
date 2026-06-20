@@ -13,8 +13,8 @@ export default function Home() {
           <AppLayout
             userEmail={userEmail}
             onSignOut={onSignOut}
-            title="Inventory"
-            subtitle="Family storage room inventory"
+            title="Tu trastero"
+            subtitle="Encuentra lo que necesitas en tu trastero"
           >
             <InventoryApp />
           </AppLayout>

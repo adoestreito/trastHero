@@ -34,7 +34,7 @@ export function TagFilter({
   selectedTagId,
   onChange,
 }: TagFilterProps) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const tagsInUse = useMemo(() => {
     const map = new Map<

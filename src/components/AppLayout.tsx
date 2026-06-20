@@ -35,13 +35,13 @@ export function AppLayout({
   const nav = (
     <nav className="flex w-full gap-0.5 rounded-full border border-border bg-card/60 p-0.5 shadow-fj-sm backdrop-blur-sm sm:w-auto sm:gap-1 sm:p-1">
       <Link href="/" className={`flex-1 text-center sm:flex-none ${navLinkClass(pathname === "/")}`}>
-        Inventory
+        Tu trastero
       </Link>
       <Link
         href="/shopping-list"
         className={`flex-1 text-center sm:flex-none ${navLinkClass(pathname === "/shopping-list")}`}
       >
-        Shopping list
+        Tu Lista de la Compra
       </Link>
     </nav>
   );
