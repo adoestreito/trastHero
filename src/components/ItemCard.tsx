@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ItemForm, type ItemFormHandle } from "@/components/ItemForm";
 import { SwipeableItemActions } from "@/components/SwipeableItemActions";
-import { dismissSwipeHint, SWIPE_HINT_KEY } from "@/components/SwipeHintBanner";
+import { dismissSwipeHint } from "@/components/SwipeHintBanner";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { formatDate, getExpirationStatus } from "@/lib/dates";
 import type { StorageLocation } from "@/types/location";
@@ -26,7 +26,8 @@ type ItemCardProps = {
   onDelete: (id: string) => Promise<void>;
   disabled?: boolean;
   hideLocation?: boolean;
-  swipeDemoHint?: boolean;
+  /** Changes when the parent section opens — replays the swipe demo on mobile. */
+  swipeDemoKey?: number;
 };
 
 function itemToDraft(item: StorageItem): StorageItemDraft {
@@ -66,7 +67,7 @@ export function ItemCard({
   onDelete,
   disabled,
   hideLocation,
-  swipeDemoHint,
+  swipeDemoKey,
 }: ItemCardProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<StorageItemDraft>(() => itemToDraft(item));
@@ -82,19 +83,6 @@ export function ItemCard({
   const saveInFlightRef = useRef(false);
   const pendingSaveRef = useRef(false);
   const isMobile = useMediaQuery("(max-width: 767px)");
-  const [showSwipeDemo, setShowSwipeDemo] = useState(false);
-
-  useEffect(() => {
-    if (!isMobile || !swipeDemoHint) {
-      setShowSwipeDemo(false);
-      return;
-    }
-    try {
-      setShowSwipeDemo(localStorage.getItem(SWIPE_HINT_KEY) !== "1");
-    } catch {
-      setShowSwipeDemo(true);
-    }
-  }, [isMobile, swipeDemoHint]);
 
   useEffect(() => {
     quantityRef.current = item.quantity;
@@ -343,7 +331,7 @@ export function ItemCard({
         dismissSwipeHint();
         setEditing(true);
       }}
-      demoHint={showSwipeDemo}
+      demoKey={isMobile && swipeDemoKey != null ? swipeDemoKey : undefined}
     >
       {card}
     </SwipeableItemActions>

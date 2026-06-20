@@ -17,7 +17,7 @@ type SwipeableItemActionsProps = {
   onDelete: () => void;
   onEdit: () => void;
   busy?: boolean;
-  demoHint?: boolean;
+  demoKey?: number;
 };
 
 function TrashIcon() {
@@ -70,7 +70,7 @@ export function SwipeableItemActions({
   onDelete,
   onEdit,
   busy,
-  demoHint = false,
+  demoKey,
 }: SwipeableItemActionsProps) {
   const [offset, setOffset] = useState(0);
   const [dragging, setDragging] = useState(false);
@@ -224,9 +224,13 @@ export function SwipeableItemActions({
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
-        <div className={demoHint ? "fj-swipe-item-demo" : undefined}>
-          {children}
-        </div>
+        {demoKey != null ? (
+          <div key={demoKey} className="fj-swipe-item-demo">
+            {children}
+          </div>
+        ) : (
+          children
+        )}
       </div>
     </div>
   );

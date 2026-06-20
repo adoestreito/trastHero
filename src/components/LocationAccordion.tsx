@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ItemCard } from "@/components/ItemCard";
 import { groupItemsByLocation } from "@/lib/groupByLocation";
 import type { StorageItem, StorageItemDraft } from "@/types/item";
@@ -19,6 +19,17 @@ type LocationAccordionProps = {
   onDelete: (id: string) => Promise<void>;
   disabled?: boolean;
 };
+
+function bumpDemo(
+  prev: Record<string, number>,
+  keys: string[]
+): Record<string, number> {
+  const next = { ...prev };
+  for (const key of keys) {
+    next[key] = (next[key] ?? 0) + 1;
+  }
+  return next;
+}
 
 export function LocationAccordion({
   items,
@@ -39,6 +50,10 @@ export function LocationAccordion({
   const groupKeys = groups.map((g) => g.key).join(",");
 
   const [openKeys, setOpenKeys] = useState<Set<string>>(() => new Set());
+  const [demoGeneration, setDemoGeneration] = useState<Record<string, number>>(
+    {}
+  );
+  const prevExpandAllRef = useRef(expandAllSections);
 
   useEffect(() => {
     if (groups.length === 0) {
@@ -47,8 +62,18 @@ export function LocationAccordion({
     }
     if (expandAllSections) {
       setOpenKeys(new Set(groups.map((g) => g.key)));
+      if (!prevExpandAllRef.current) {
+        setDemoGeneration((prev) =>
+          bumpDemo(
+            prev,
+            groups.map((g) => g.key)
+          )
+        );
+      }
+      prevExpandAllRef.current = true;
       return;
     }
+    prevExpandAllRef.current = false;
     setOpenKeys((prev) => {
       const valid = new Set(groups.map((g) => g.key));
       return new Set([...prev].filter((k) => valid.has(k)));
@@ -56,12 +81,16 @@ export function LocationAccordion({
   }, [groupKeys, expandAllSections, groups]);
 
   const toggle = (key: string) => {
+    const opening = !openKeys.has(key);
     setOpenKeys((prev) => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
       else next.add(key);
       return next;
     });
+    if (opening) {
+      setDemoGeneration((prev) => bumpDemo(prev, [key]));
+    }
   };
 
   return (
@@ -112,7 +141,9 @@ export function LocationAccordion({
                       onDelete={onDelete}
                       disabled={disabled}
                       hideLocation
-                      swipeDemoHint={index === 0}
+                      swipeDemoKey={
+                        index === 0 ? demoGeneration[group.key] : undefined
+                      }
                     />
                   </li>
                 ))}
