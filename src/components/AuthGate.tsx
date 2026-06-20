@@ -1,5 +1,6 @@
 "use client";
 
+import { AppLogo } from "@/components/AppLogo";
 import { AuthForm } from "@/components/AuthForm";
 import { useAuth } from "@/components/AuthProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -16,7 +17,8 @@ export function AuthGate({ children }: AuthGateProps) {
 
   if (loading) {
     return (
-      <div className="fj-mesh flex min-h-screen items-center justify-center">
+      <div className="fj-mesh flex min-h-screen flex-col items-center justify-center gap-4">
+        <AppLogo size="md" href={null} priority />
         <p className="text-sm text-muted">Loading…</p>
       </div>
     );
@@ -26,20 +28,22 @@ export function AuthGate({ children }: AuthGateProps) {
     return (
       <div className="fj-mesh min-h-screen">
         <header className="fj-nav">
-          <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-            <div className="flex items-center gap-2">
-              <span className="fj-badge-dot" aria-hidden />
-              <span className="text-sm font-semibold tracking-tight text-foreground">
-                TrastHero
-              </span>
-            </div>
-            <ThemeToggle />
+          <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-3 py-2 sm:px-6 sm:py-3">
+            <AppLogo size="sm" priority />
+            <ThemeToggle compact className="sm:hidden" />
+            <ThemeToggle className="hidden sm:flex" />
           </div>
         </header>
 
-        <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24">
+        <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-24">
           <div className="mx-auto max-w-lg text-center">
-            <span className="fj-badge">
+            <AppLogo
+              size="lg"
+              href={null}
+              className="mx-auto"
+              priority
+            />
+            <span className="fj-badge mt-6">
               <span className="fj-badge-dot" aria-hidden />
               Built for your household
             </span>

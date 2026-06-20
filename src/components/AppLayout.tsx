@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { AppLogo } from "@/components/AppLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { btnSecondary } from "@/lib/ui";
 
@@ -51,13 +52,7 @@ export function AppLayout({
         <div className="mx-auto max-w-5xl px-3 py-2 sm:px-6 sm:py-3">
           <div className="flex flex-col gap-2 sm:hidden">
             <div className="flex items-center justify-between gap-2">
-              <Link
-                href="/"
-                className="flex items-center gap-1.5 text-xs font-semibold tracking-tight text-foreground"
-              >
-                <span className="fj-badge-dot" aria-hidden />
-                TrastHero
-              </Link>
+              <AppLogo size="sm" priority />
               <div className="flex items-center gap-1.5">
                 <ThemeToggle compact />
                 <button
@@ -81,13 +76,7 @@ export function AppLayout({
           </div>
 
           <div className="hidden flex-wrap items-center justify-between gap-4 sm:flex">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground"
-            >
-              <span className="fj-badge-dot" aria-hidden />
-              TrastHero
-            </Link>
+            <AppLogo size="md" priority />
 
             {nav}
 
