@@ -3,10 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ItemForm, type ItemFormHandle } from "@/components/ItemForm";
 import { LocationAccordion } from "@/components/LocationAccordion";
-import { MobileAddItemDrawer } from "@/components/MobileAddItemDrawer";
 import { SwipeHintBanner } from "@/components/SwipeHintBanner";
 import { TagFilter } from "@/components/TagFilter";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { draftToInput } from "@/lib/draft";
 import {
   createItem,
@@ -49,9 +47,7 @@ export function InventoryApp() {
   const [newItem, setNewItem] = useState<StorageItemDraft>(emptyDraft);
   const [adding, setAdding] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [mobileAddOpen, setMobileAddOpen] = useState(false);
   const addFormRef = useRef<ItemFormHandle>(null);
-  const isMobile = useMediaQuery("(max-width: 767px)");
 
   const load = useCallback(async () => {
     setError(null);
@@ -75,12 +71,6 @@ export function InventoryApp() {
     load();
   }, [load]);
 
-  const closeAdd = useCallback(() => {
-    setShowAddForm(false);
-    setMobileAddOpen(false);
-    setNewItem(emptyDraft());
-  }, []);
-
   const handleAdd = async () => {
     if (!newItem.name.trim()) return;
     setAdding(true);
@@ -91,7 +81,8 @@ export function InventoryApp() {
       setItems((prev) =>
         [...prev, created].sort((a, b) => a.name.localeCompare(b.name))
       );
-      closeAdd();
+      setNewItem(emptyDraft());
+      setShowAddForm(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to add item");
     } finally {
@@ -176,22 +167,34 @@ export function InventoryApp() {
 
   const busy = loading || adding;
 
-  const addForm = (
-    <ItemForm
-      ref={addFormRef}
-      draft={newItem}
-      onChange={setNewItem}
-      locations={locations}
-      tags={tags}
-      onLocationCreated={handleLocationCreated}
-      onLocationUpdated={handleLocationUpdated}
-      onTagCreated={handleTagCreated}
-      disabled={busy}
-    />
-  );
-
-  const inventoryBody = (
+  return (
     <>
+      {error && (
+        <div role="alert" className={`mb-6 ${alertError}`}>
+          {error}
+        </div>
+      )}
+
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <input
+          type="search"
+          placeholder="Search by name, location, tags, or notes…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className={`flex-1 ${inputClass}`}
+        />
+        <button
+          type="button"
+          onClick={() => {
+            setShowAddForm((v) => !v);
+            if (showAddForm) setNewItem(emptyDraft());
+          }}
+          className={btnPrimary}
+        >
+          {showAddForm ? "Cancel" : "+ Add item"}
+        </button>
+      </div>
+
       {!loading && (
         <TagFilter
           items={items}
@@ -200,14 +203,37 @@ export function InventoryApp() {
         />
       )}
 
+      {showAddForm && (
+        <section className={`mb-8 ${cardClass} p-6`}>
+          <h2 className={`mb-4 ${sectionLabel}`}>New item</h2>
+          <ItemForm
+            ref={addFormRef}
+            draft={newItem}
+            onChange={setNewItem}
+            locations={locations}
+            tags={tags}
+            onLocationCreated={handleLocationCreated}
+            onLocationUpdated={handleLocationUpdated}
+            onTagCreated={handleTagCreated}
+            disabled={busy}
+          />
+          <button
+            type="button"
+            onClick={handleAdd}
+            disabled={busy || !newItem.name.trim()}
+            className={`mt-4 ${btnPrimary}`}
+          >
+            {adding ? "Adding…" : "Add to inventory"}
+          </button>
+        </section>
+      )}
+
       {loading ? (
         <p className="py-12 text-center text-muted">Loading inventory…</p>
       ) : filtered.length === 0 ? (
         <p className={`${emptyState} py-16 text-center text-muted`}>
           {items.length === 0
-            ? isMobile
-              ? "No items yet. Swipe left or tap + on the edge to add one."
-              : "No items yet. Add your first one above."
+            ? "No items yet. Add your first one above."
             : hasActiveFilters
               ? "No items match your filters."
               : "No items match your search."}
@@ -234,76 +260,6 @@ export function InventoryApp() {
         <p className="mt-8 text-center text-xs text-muted">
           {items.length} item{items.length === 1 ? "" : "s"} in storage
         </p>
-      )}
-    </>
-  );
-
-  return (
-    <>
-      {error && (
-        <div role="alert" className={`mb-6 ${alertError}`}>
-          {error}
-        </div>
-      )}
-
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <input
-          type="search"
-          placeholder="Search by name, location, tags, or notes…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className={`flex-1 ${inputClass}`}
-        />
-        <button
-          type="button"
-          onClick={() => {
-            if (isMobile) {
-              setMobileAddOpen(true);
-              return;
-            }
-            setShowAddForm((v) => !v);
-            if (showAddForm) setNewItem(emptyDraft());
-          }}
-          className={`${btnPrimary} hidden sm:inline-flex`}
-        >
-          {showAddForm ? "Cancel" : "+ Add item"}
-        </button>
-        {isMobile && (
-          <p className="text-center text-xs text-muted sm:hidden">
-            Swipe left on the list or tap <span className="font-semibold text-accent">+</span> on the right edge to add
-          </p>
-        )}
-      </div>
-
-      {showAddForm && !isMobile && (
-        <section className={`mb-8 ${cardClass} p-6`}>
-          <h2 className={`mb-4 ${sectionLabel}`}>New item</h2>
-          {addForm}
-          <button
-            type="button"
-            onClick={handleAdd}
-            disabled={busy || !newItem.name.trim()}
-            className={`mt-4 ${btnPrimary}`}
-          >
-            {adding ? "Adding…" : "Add to inventory"}
-          </button>
-        </section>
-      )}
-
-      {isMobile ? (
-        <MobileAddItemDrawer
-          open={mobileAddOpen}
-          onOpen={() => setMobileAddOpen(true)}
-          onClose={closeAdd}
-          onSubmit={handleAdd}
-          submitting={adding}
-          canSubmit={!!newItem.name.trim()}
-          surface={inventoryBody}
-        >
-          {addForm}
-        </MobileAddItemDrawer>
-      ) : (
-        inventoryBody
       )}
     </>
   );
